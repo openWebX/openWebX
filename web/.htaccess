@@ -1,0 +1,41 @@
+# Handle every 404 directly
+ErrorDocument 404 /index.php
+
+
+<IfModule mod_php5.c>
+  php_value magic_quotes_gpc                0
+  php_value register_globals                0
+  php_value session.auto_start              0
+  php_value mbstring.http_input             pass
+  php_value mbstring.http_output            pass
+  php_value mbstring.encoding_translation   0
+  php_value include_path 					".:/var/www/openWebX/etc:/var/www/openWebX/lib"
+</IfModule>
+
+# Requires mod_expires to be enabled.
+<IfModule mod_expires.c>
+  # Enable expirations.
+  ExpiresActive On
+  ExpiresByType text/html A1
+  ExpiresByType application/x-javascript "access plus 2 years"
+  ExpiresByType application/javascript "access plus 2 years"
+  ExpiresByType text/javascript "access plus 2 years"
+  ExpiresByType text/css "access plus 2 years"
+  ExpiresByType image/gif "access plus 2 years"
+  ExpiresByType image/jpeg "access plus 2 years"
+  ExpiresByType image/jpg "access plus 2 years"
+  ExpiresByType image/png "access plus 2 years"
+  # Cache all files for 2 weeks after access (A).
+  ExpiresDefault A1209600
+  # Do not cache dynamically generated pages.
+</IfModule>
+
+
+<IfModule mod_rewrite.c>
+  	RewriteEngine on
+	RewriteBase /
+  	RewriteCond %{REQUEST_FILENAME} !-f
+  	RewriteCond %{REQUEST_FILENAME} !-d
+  	RewriteCond %{REQUEST_URI} !=/favicon.ico
+  	RewriteRule ^(.*)$ index.php?request=$1 [L,QSA]
+</IfModule>
