@@ -36,6 +36,11 @@
 */
 class openDB extends openDB_Abstract {
 	
+	/**
+	 * overloaded property
+	 * 
+	 * @access public 
+	 */
 	public $data 			= array();
 	
 	private $dbObject		= null;
@@ -51,12 +56,10 @@ class openDB extends openDB_Abstract {
 	
 	
 	public function dbCreateStructure() {
-		echo 'Creating...';
 		if (!$this->dbObject->databaseExists($this->data['dbDatabase'])) {
 			$this->dbObject->createDatabase($this->data['dbDatabase']);
 		}
 		foreach ($_SESSION['openWebX']['views'] as $key=>$val) {
-			echo $key;
 			if (!$this->dbObject->getDoc($key)) {
 				$myDoc = new StdClass();
 				$myDoc->_id=$key;
