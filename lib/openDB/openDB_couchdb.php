@@ -60,12 +60,12 @@ class openDB extends openDB_Abstract {
 			$this->dbObject->createDatabase($this->data['dbDatabase']);
 		}
 		foreach ($_SESSION['openWebX']['views'] as $key=>$val) {
-			if (!$this->dbObject->getDoc($key)) {
+			if (!$this->dbGetByID($key)) {
 				$myDoc = new StdClass();
 				$myDoc->_id=$key;
 				$myDoc->language='javascript';
 				$myDoc->views = json_decode($val);
-				 $this->dbObject->storeDoc($myDoc);
+				$this->dbStore($myDoc);
 			}	
 		}
 	}
@@ -86,18 +86,18 @@ class openDB extends openDB_Abstract {
 		'Trying to set:'.$strStatement;
 	}
 	
-	public function dbStore($strType,$objContent) {
+	public function dbStore($objContent) {
+		openDebug::dbgVar($objContent);
 		if (!is_object($objContent)) {
 			throw new InvalidArgumentException ("Content should be an object");
 		}
 		if (!$this->dbObject->getDoc($objContent->_id)) {
 			$this->dbObject->storeDoc($objContent);
 		}
-		openDebug::dbgVar($objContent);
 	}
 	
 	public function dbGetByID($strID) {
-		
+		return ($myDoc = $this->dbObject->getDoc($strID)) ? $myDoc : null; 
 	}
 	
 	public function dbGetByField($strField,$mixedValue) {

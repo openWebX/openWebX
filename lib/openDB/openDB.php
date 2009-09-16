@@ -9,7 +9,7 @@ abstract class openDB_Abstract extends openWebX implements openObject {
 	public abstract function dbFetchObject();
 	public abstract function dbSetStatement($strStatement,$arrParams=null);
 	
-	public abstract function dbStore($strType,$arrContent);
+	public abstract function dbStore($objContent);
 	
 	
 	

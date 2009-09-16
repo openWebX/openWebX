@@ -1,6 +1,6 @@
 <?php
 // ########################################################################
-// # File: $Id: sqls.php 218 2009-08-14 14:16:41Z jens $
+// # File: $Id$
 // ########################################################################
 // # This program is free software; you can redistribute it and/or modify
 // # it under the terms of the GNU General Public License V3
@@ -17,31 +17,22 @@
 // # GNU General Public License for more details.
 // #
 // ########################################################################
-// # Autor: $Author: jens $
+// # Autor: $Author$
 // ########################################################################
-// # Revision: $Revision: 218 $
+// # Revision: $Revision$
 // ########################################################################
-
-
 /**
- * "views" for couchDB
- * 
- */
-$_SESSION['openWebX']['views'] = array(
-	'_design/slot'		=> '
-  			{
-    			"all": {
-      				"map": "function(doc) { if (doc.type == \'slot\')  emit(doc._id, doc) }"
-    			},
-    			"by_slot": {
-      				"map": "function(doc) { if (doc.type == \'slot\')  emit(doc.slot, doc) }"
-    			},
-				"by_object": {
-      				"map": "function(doc) { if (doc.type == \'slot\')  emit(doc.object, doc) }"
-    			}
-  			}
-	',
-
-);
-
+* openBlog
+*
+* Part of the openWebX-API
+* This class is stable
+* @author Jens Reinemuth <jens@openos.de>
+* @version $Id$
+* @package openWebX
+* @subpackage openBlog
+* @uses openWebX
+*/
+class openBlog extends openWebX {
+	
+}
 ?>

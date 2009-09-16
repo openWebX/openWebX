@@ -158,7 +158,7 @@ class openWebX {
   		$slot->slot		= $strSlotName;
   		$slot->priority	= $iPriority;
   		$myDB = new openDB();
-  		$myDB->dbStore('slot',$slot);
+  		$myDB->dbStore($slot);
   		unset($myDB);
   	}
 
@@ -175,7 +175,7 @@ class openWebX {
 	}
 
     final static function getSlots($strSlotName) {
-      $retVal = false;
+      $retVal = array();
       return ($retVal);
     }
 
