@@ -40,7 +40,7 @@ class openDocument extends openWebX {
 	
 	public function __construct($strID,$strType) {
 		$this->dbObject 	= new openDB();
-		$this->_id			= openFilter::filterAction('clean','string',$strID);
+		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
 		if (!$this->load()) {
 			$this->docObject 	= new StdClass();
 			$this->type			= openFilter::filterAction('clean','string',$strType);
@@ -58,7 +58,7 @@ class openDocument extends openWebX {
 	
 	public function save() {
 		$this->map();
-		echo $this->dbObject->dbStore($this->docObject);
+		$this->dbObject->dbStore($this->docObject);
 	}
 	
 	public function load() {

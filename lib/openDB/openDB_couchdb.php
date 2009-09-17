@@ -73,7 +73,6 @@ class openDB extends openDB_Abstract {
 
 	
 	public function dbStore($objContent) {
-		openDebug::dbgVar($objContent);
 		if (!is_object($objContent)) {
 			throw new InvalidArgumentException ("Content should be an object");
 		}
@@ -453,7 +452,6 @@ class couchClient extends couchBasic {
 	*/
 	protected function _queryAndTest ( $method, $url,$allowed_status_codes, $parameters = array(),$data = NULL ) {
 	    $raw = $this->query($method,$url,$parameters,$data);
-	    print_r($raw);
 	    $response = $this->parseRawResponse($raw);
 	    if ( in_array($response['status_code'], $allowed_status_codes) ) {
 	      return $response['body'];
@@ -856,8 +854,6 @@ class couchClient extends couchBasic {
 		$results_as_cd = $this->results_as_cd;
 		$this->view_query = array();
 		$this->results_as_cd = false;
-		print_r($url);
-		print_r($view_query);
 		if ( ! $results_as_cd ) {
 			return $this->_queryAndTest ('GET', $url, array(200),$view_query);
 		} else {
