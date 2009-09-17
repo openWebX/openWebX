@@ -70,21 +70,7 @@ class openDB extends openDB_Abstract {
 		}
 	}
 	
-	public function dbCreateView($strViewName,$strSQL) {
-		
-	}
-	public function dbExecute() {
-		
-	}
-	public function dbFetchArray() {
-		
-	}
-	public function dbFetchObject() {
-		
-	}
-	public function dbSetStatement($strStatement,$arrParams=null) {
-		'Trying to set:'.$strStatement;
-	}
+
 	
 	public function dbStore($objContent) {
 		openDebug::dbgVar($objContent);
@@ -96,12 +82,25 @@ class openDB extends openDB_Abstract {
 		}
 	}
 	
+	public function dbGetByType($strType) {
+		$strType 	= strtolower(openFilter::filterAction('clean','string',$strType));
+		$myViewID	= $strType;
+		$myViewName = 'all';
+		return ($myDocs = $this->dbObject->getView($myViewID,$myViewName)) ? $myDocs : null;
+	}
+	
 	public function dbGetByID($strID) {
+		$strID = openFilter::filterAction('clean','string',$strID);
 		return ($myDoc = $this->dbObject->getDoc($strID)) ? $myDoc : null; 
 	}
 	
-	public function dbGetByField($strField,$mixedValue) {
-		
+	public function dbGetByField($strType,$strField,$mixedValue) {
+		$strType 	= strtolower(openFilter::filterAction('clean','string',$strType));
+		$strField 	= strtolower(openFilter::filterAction('clean','string',$strField));
+		$myViewID	= $strType;
+		$myViewName = 'by_'.strtolower($strField);
+		$this->dbObject->key($mixedValue);
+		return ($myDocs = $this->dbObject->getView($myViewID,$myViewName)) ? $myDocs : null;
 	}
 	
 	private function dbSetVariables() {
@@ -121,7 +120,7 @@ class openDB extends openDB_Abstract {
 	}
 	
 	private function dbDisconnect() {
-		
+		unset($this->dbObject);
 	}
 	
 	private function dbTestServer() {
@@ -454,11 +453,12 @@ class couchClient extends couchBasic {
 	*/
 	protected function _queryAndTest ( $method, $url,$allowed_status_codes, $parameters = array(),$data = NULL ) {
 	    $raw = $this->query($method,$url,$parameters,$data);
+	    print_r($raw);
 	    $response = $this->parseRawResponse($raw);
 	    if ( in_array($response['status_code'], $allowed_status_codes) ) {
 	      return $response['body'];
 	    }
-	    return FALSE;
+	    return false;
 	}
 	 
 	/**
@@ -856,11 +856,13 @@ class couchClient extends couchBasic {
 		$results_as_cd = $this->results_as_cd;
 		$this->view_query = array();
 		$this->results_as_cd = false;
-		if ( ! $results_as_cd )
-		return $this->_queryAndTest ('GET', $url, array(200),$view_query);
-		return $this->resultsToCouchDocuments (
-			$this->_queryAndTest ('GET', $url, array(200),$view_query)
-		);
+		print_r($url);
+		print_r($view_query);
+		if ( ! $results_as_cd ) {
+			return $this->_queryAndTest ('GET', $url, array(200),$view_query);
+		} else {
+			return $this->resultsToCouchDocuments ($this->_queryAndTest ('GET', $url, array(200),$view_query));
+		}
 	}
 	/**
 	* returns couchDB view results as couchDocuments objects

@@ -150,33 +150,45 @@ class openWebX {
 	}
 
   	final public function registerSlot($objRegistrar,$strSlotName,$iPriority=0) {
-  		$myHash = md5(get_class($objRegistrar).$strSlotName);
-  		$slot = new StdClass();
+  		$myHash 		= md5(get_class($objRegistrar).$strSlotName);
+  		$slot 			= new openDocument($myHash,'slot');
   		$slot->_id 		=  $myHash;
   		$slot->type		= 'slot';
   		$slot->object	= get_class($objRegistrar);
   		$slot->slot		= $strSlotName;
   		$slot->priority	= $iPriority;
-  		$myDB = new openDB();
-  		$myDB->dbStore($slot);
-  		unset($myDB);
+  		$slot->save();
+  		unset($slot);
   	}
 
   	final static function sendSignal($strSignalName,$mixedParams) {
-  	  $strSignalName = openFilter::filterAction('clean','string',$strSignalName);
-      $myArr = self::getSlots($strSignalName);
-      foreach ($myArr as $key=>$val) {
-        $myObj = self::init($val['object']);
-        $myObj->handleSignal($strSignalName,$mixedParams);
-      }
+  	  	$strSignalName 	= openFilter::filterAction('clean','string',$strSignalName);
+      	$myArr 			= self::getSlots($strSignalName);
+      	foreach ($myArr as $key=>$val) {
+        	$myObj = self::init($val->object);
+        	$myObj->handleSignal($strSignalName,$mixedParams);
+      	}
   	}
 
   	final static function showSlots() {
+  		$retVal = null;
+  		$myDB 	= new openDB();
+  		$resObj = $myDB->dbGetByType('slot');
+  		foreach($resObj->rows as $row) {
+  			$retVal[] = $row->value;
+  		}
+  		return $retVal;
 	}
 
     final static function getSlots($strSlotName) {
-      $retVal = array();
-      return ($retVal);
+      	$retVal 		= null;
+      	$strSlotName 	= openFilter::filterAction('clean','string',$strSlotName);
+      	$myDB 			= new openDB();
+  		$resObj 		= $myDB->dbGetByField('slot','slot',$strSlotName);
+  		foreach($resObj->rows as $row) {
+  			$retVal[] = $row->value;
+  		}
+      	return $retVal;
     }
 
 }
