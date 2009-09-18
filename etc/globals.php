@@ -12,7 +12,7 @@
 // # it under the terms of the GNU General Public License V3
 // #
 // # This program is subject to the GPL license, that is bundled with
-// # this package in the file /share/LICENSE.TXT.
+// # this package in the file /doc/GPL-3.
 // # If you did not receive a copy of the GNU General Public License
 // # along with this program write to the Free Software Foundation, Inc.,
 // # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA

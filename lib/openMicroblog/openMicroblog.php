@@ -6,7 +6,7 @@
 // # it under the terms of the GNU General Public License V3
 // #
 // # This program is subject to the GPL license, that is bundled with
-// # this package in the file /share/LICENSE.TXT.
+// # this package in the file /doc/GPL-3.
 // # If you did not receive a copy of the GNU General Public License
 // # along with this program write to the Free Software Foundation, Inc.,
 // # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -71,65 +71,56 @@ class openMicroblog extends openWebX implements openObject {
 	}
 
 	private function mbShow() {
+		openDebug::dbgVar($this->mbEntries);
 		foreach ($this->mbEntries as $entry) {
-			$myTag = new openHTML_Tag('p');
-			$myTag->class = 'openMicroblog_entry';
 			
-			echo '<p class="openMicroblog_entry"><img src="/share/images/icons/openMicroblog/'.$entry['type'].'.png" style="float:left;" /><p class="openMicroblog_title">'.$entry['author'].' ('.date('d.m.Y H:i:s',strtotime($entry['created'])).')</p><p class="openMicroblog_content">'.openString::strConvertLinks($entry['content']).'</p></p>';
-			unset ($myTag);
+			echo '
+			<p class="openMicroblog_entry">
+				<img src="/share/images/icons/openMicroblog/'.$entry->service.'.png" style="float:left;" />
+				<p class="openMicroblog_title">'.$entry->author.' ('.date('d.m.Y H:i:s',strtotime($entry->created)).')</p>
+				<p class="openMicroblog_content">'.openString::strConvertLinks($entry->content).'</p>
+			</p>
+			';
+			//unset ($myTag);
 		}
 	}
 
 	private function mbGet($strType,$iLimit=5) {
-		$arrParams = array ('type'=>$strType);
 		$myDB = new openDB();
-		($strType=='microblog') ? $strSQL = SQL_openMicroblog_getEntries : $strSQL = SQL_openMicroblog_getEntries; 
-		$myDB->dbSetStatement($strSQL.' LIMIT '.$iLimit,$arrParams);
-		$myDB->dbFetchArray();
-		$this->mbEntries = $myDB->dbResultArray;
+		$tmpRet = $myDB->dbGetByField('microblog','date',null,$iLimit,true);
 		unset($myDB);
+		foreach ($tmpRet->rows as $key=>$val) {
+			$this->mbEntries[] = $val->value;	
+		}
 	}
 
 	private function mbGetNew($strType='laconica') {
 		$strType = strtolower(openFilter::filterAction('clean','string',$strType));
 	    $this->mbBuildRequestURI($strType);
 		$this->mbGetEntries();
-		$this->mbPrepareSave($strType);
-		$this->mbSave();
+		$this->mbSave($strType);
 		
 	}
 
-	private function mbSave() {
-		$myDB = new openDB();
-		foreach ($this->mbEntries as $elements) {
-			$myDB->dbSetStatement(SQL_openMicroblog_storeEntry,$elements);
-			$myDB->dbExecute();	
-		}
-		unset ($myDB);
-	}
 
-	private function mbPrepareSave($strType) {
-		$myArray = array();
+	private function mbSave($strType) {
 		foreach ($this->mbEntries->status as $val) {
-			$arrVal 	= (array)$val;
-			$arrUser	= (array)$arrVal['user'];
-			$item = array (
-				'created' => date('Y-m-d H:i:s',strtotime($arrVal['created_at'])),
-				'author' => $arrUser['name'],
-				'type'	=> $strType,
-				'content' => $arrVal['text']
-			);
-			$hash = md5(serialize($item));
-			$item['hash'] = $hash;
-			$myArray[] = $item;
+			$arrVal 		= (array)$val;
+			$arrUser		= (array)$arrVal['user'];
+			$item 			= new openDocument($arrVal['text'],'microblog');
+			$item->created 	= date('Y-m-d H:i:s',strtotime($arrVal['created_at']));
+			$item->author 	= $arrUser['name'];
+			$item->service	= $strType;
+			$item->content 	= $arrVal['text'];
+			$item->save();
+			unset($item);
 		}
-		$this->mbEntries = $myArray;
 	}
 
 	private function mbGetEntries() {
 		$buffer             = file_get_contents($this->mbRequestURI);
-        $xml            = new SimpleXMLElement($buffer);
-        $this->mbEntries= $xml;
+        $xml            	= new SimpleXMLElement($buffer);
+        $this->mbEntries	= $xml;
         unset($xml);
 	}
 
