@@ -34,10 +34,36 @@
 */
 class openDocument extends openWebX {
 	
+	/**
+	 * overloaded property to simply build up an Doc-Object
+	 * 
+	 * @access public
+	 */
 	public 	$data 		= array();
+	/**
+	 * the document object
+	 * 
+	 * @access private
+	 */
 	private $docObject	= null;
+	/**
+	 * the database object
+	 * 
+	 * @access private
+	 */
 	private $dbObject	= null;
 	
+	
+	
+	
+	/**
+	 * loads the given document (id and type) from database or initializes a new one.
+	 * 
+	 * @access public
+	 * @param string $strID - the id of the document
+	 * @param string $strType - type of document
+	 * @return void
+	 */
 	public function __construct($strID,$strType) {
 		$this->dbObject 	= new openDB();
 		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
@@ -47,24 +73,53 @@ class openDocument extends openWebX {
 		}	
 	}
 	
+	/**
+	 * unsets dbObject and docObject
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function __destruct() {
 		unset ($this->docObject,$this->dbObject);
 	}
 	
+	/**
+	 * maps the internal object into needed structure and returns it
+	 * 
+	 * @access public
+	 * @return object $this->docObject
+	 */
 	public function get() {
 		$this->map();
 		return $this->docObject();
 	}
 	
+	/**
+	 * saves the current docObject to database
+	 * 
+	 * @access public
+	 * @return boolean success?
+	 */
 	public function save() {
 		$this->map();
-		$this->dbObject->dbStore($this->docObject);
+		return $this->dbObject->dbStore($this->docObject);
 	}
 	
+	/**
+	 * loads document by given properties
+	 * 
+	 * @access public
+	 * @return boolean success? 
+	 */
 	public function load() {
-		$this->docObject = $this->dbObject->dbGetByID($this->data['_id']);
+		return ($this->docObject = $this->dbObject->dbGetByID($this->data['_id'])) ? true : false;
 	}
 	
+	/**
+	 * maps overloaded properties to docObject
+	 * 
+	 * @access private
+	 */
 	private function map() {
 		foreach ($this->data as $key=>$val) {
 			$this->docObject->$key = $val;

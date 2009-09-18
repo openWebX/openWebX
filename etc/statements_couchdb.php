@@ -41,7 +41,19 @@ $_SESSION['openWebX']['views'] = array(
     			}
   			}
 	',
-
+	'_design/microblog'	=> '
+			{
+				"all": {
+      				"map": "function(doc) { if (doc.type == \'microblog\')  emit(doc._id, doc) }"
+    			},
+    			"by_service": {
+      				"map": "function(doc) { if (doc.type == \'microblog\')  emit(doc.service, doc) }"
+    			},
+				"by_date": {
+      				"map": "function(doc) { if (doc.type == \'microblog\')  emit(doc.created, doc) }"
+    			}
+			}
+	',
 );
 
 ?>

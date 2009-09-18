@@ -81,6 +81,11 @@ class openDB extends openDB_Abstract {
 		}
 	}
 	
+	public function dbGetByID($strID) {
+		$strID = openFilter::filterAction('clean','string',$strID);
+		return ($myDoc = $this->dbObject->getDoc($strID)) ? $myDoc : null; 
+	}
+
 	public function dbGetByType($strType) {
 		$strType 	= strtolower(openFilter::filterAction('clean','string',$strType));
 		$myViewID	= $strType;
@@ -88,17 +93,18 @@ class openDB extends openDB_Abstract {
 		return ($myDocs = $this->dbObject->getView($myViewID,$myViewName)) ? $myDocs : null;
 	}
 	
-	public function dbGetByID($strID) {
-		$strID = openFilter::filterAction('clean','string',$strID);
-		return ($myDoc = $this->dbObject->getDoc($strID)) ? $myDoc : null; 
-	}
+	public function dbGetList($strType,$strField,$mixedValue) {
+		
+	} 
 	
-	public function dbGetByField($strType,$strField,$mixedValue) {
+	public function dbGetByField($strType,$strField,$mixedValue,$iLimit=false,$boolDescending=false) {
 		$strType 	= strtolower(openFilter::filterAction('clean','string',$strType));
 		$strField 	= strtolower(openFilter::filterAction('clean','string',$strField));
 		$myViewID	= $strType;
 		$myViewName = 'by_'.strtolower($strField);
-		$this->dbObject->key($mixedValue);
+		if ($mixedValue) $this->dbObject->key($mixedValue);
+		if ($boolDescending) $this->dbObject->descending($boolDescending);
+		if ($iLimit) $this->dbObject->limit($iLimit);
 		return ($myDocs = $this->dbObject->getView($myViewID,$myViewName)) ? $myDocs : null;
 	}
 	
@@ -171,20 +177,19 @@ class openDB extends openDB_Abstract {
 class couchBasic {
 
  	/**
-	* @var string database server hostname
+	* string database server hostname
 	*/
 	protected $hostname = '';
 	/**
-	* @var integer database server TCP port
+	* integer database server TCP port
 	*/
 	protected $port = 0;
 	/**
-	* @var array allowed HTTP methods for REST dialog
+	* array allowed HTTP methods for REST dialog
 	*/
 	protected $HTTP_METHODS = array('GET','POST','PUT','DELETE','COPY');
 	/**
-	* @var resource HTTP servfer socket
-	* @see _connect()
+	* resource HTTP server socket
 	*/
 	protected $socket = NULL;
  
@@ -271,9 +276,9 @@ class couchBasic {
 		$this->socket = @fsockopen($this->hostname, $this->port, $err_num, $err_string);
 		if(!$this->socket) {
 			throw new Exception('Could not open connection to '.$this->hostname.':'.$this->port.': '.$err_string.' ('.$err_num.')');
-			return FALSE;
+			return false;
 		}
-		return TRUE;
+		return true;
 	}
 	 
 	/**
@@ -298,7 +303,7 @@ class couchBasic {
 	*/
 	protected function _disconnect() {
 		@fclose($this->socket);
-		$this->socket = NULL;
+		$this->socket = null;
 	}
 	 
 	/**
@@ -514,10 +519,10 @@ class couchClient extends couchBasic {
 	public function databaseExists () {
 	    try {
 	      	$back = $this->getDatabaseInfos();
-	      	return TRUE;
+	      	return true;
 	    } catch ( Exception $e ) {
 	      	// if status code = 404 database does not exist
-	      	if ( $e->getCode() == 404 ) return FALSE;
+	      	if ( $e->getCode() == 404 ) return false;
 	      	// we met another exception so we throw it
 	      	throw $e;
 	    }
@@ -548,10 +553,13 @@ class couchClient extends couchBasic {
 	* @return object CouchDB document storage response
 	*/
 	public function storeDoc ( $doc ) {
-		if ( !is_object($doc) ) throw new InvalidArgumentException ("Document should be an object");
+		if ( !is_object($doc) ) {
+			throw new InvalidArgumentException ("Document should be an object");
+		}
 		foreach ( array_keys(get_object_vars($doc)) as $key ) {
-			if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) )
-			throw new InvalidArgumentException("Property $key can't begin with an underscore");
+			if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) ) {
+				throw new InvalidArgumentException("Property $key can't begin with an underscore");
+			}
 		}
 	    $method = 'POST';
 	    $url = '/'.urlencode($this->dbname);
@@ -570,11 +578,12 @@ class couchClient extends couchBasic {
 	* @return object CouchDB document storage response
 	*/
 	public function copyDoc($id,$new_id) {
-		if ( !strlen($id) )
+		if ( !strlen($id) ) {
 			throw new InvalidArgumentException ("Document ID is empty");
-		if ( !strlen($new_id) )
+		}
+		if ( !strlen($new_id) ) {
 			throw new InvalidArgumentException ("New document ID is empty");
-	 
+		}	 
 	    $method = 'COPY';
 	    $url = '/'.urlencode($this->dbname);
 	    $url.='/'.urlencode($id);
@@ -593,10 +602,16 @@ class couchClient extends couchBasic {
 	* @return object CouchDB attachment storage response
 	*/
 	public function storeAsAttachment ($doc,$data,$filename,$content_type = 'application/octet-stream') {
-		if ( !is_object($doc) ) throw new InvalidArgumentException ("Document should be an object");
-	    if ( !$doc->_id ) throw new InvalidArgumentException ("Document should have an ID");
+		if ( !is_object($doc) ) {
+			throw new InvalidArgumentException ("Document should be an object");
+		}
+	    if ( !$doc->_id ) {
+	    	throw new InvalidArgumentException ("Document should have an ID");
+	    }
 	    $url = '/'.urlencode($this->dbname).'/'.urlencode($doc->_id).'/'.urlencode($filename);
-	    if ( $doc->_rev ) $url.='?rev='.$doc->_rev;
+	    if ( $doc->_rev ) {
+	    	$url.='?rev='.$doc->_rev;
+	    }
 	    $raw = $this->store_as_file($url,$data,$content_type);
 	    $response = $this->parse_raw_response($raw);
 	    return $response['body'];
@@ -614,12 +629,20 @@ class couchClient extends couchBasic {
 	* @return object CouchDB attachment storage response
 	*/
 	public function storeAttachment ($doc,$file,$content_type = 'application/octet-stream',$filename = null) {
-		if ( !is_object($doc) ) throw new InvalidArgumentException ("Document should be an object");
-	    if ( !$doc->_id ) throw new InvalidArgumentException ("Document should have an ID");
-	    if ( !is_file($file) ) throw new InvalidArgumentException ("File $file does not exist");
+		if ( !is_object($doc) ) {
+			throw new InvalidArgumentException ("Document should be an object");
+		}
+	    if ( !$doc->_id ) {
+	    	throw new InvalidArgumentException ("Document should have an ID");
+	    }
+	    if ( !is_file($file) ) {
+	    	throw new InvalidArgumentException ("File $file does not exist");
+	    }
 	    $url = '/'.urlencode($this->dbname).'/'.urlencode($doc->_id).'/';
 	    $url .= empty($filename) ? basename($file) : $filename ;
-	    if ( $doc->_rev ) $url.='?rev='.$doc->_rev;
+	    if ( $doc->_rev ) {
+	    	$url.='?rev='.$doc->_rev;
+	    }
 	    $raw = $this->storeFile($url,$file,$content_type);
 	    $response = $this->parseRawResponse($raw);
 	    return $response['body'];
@@ -632,17 +655,23 @@ class couchClient extends couchBasic {
 	* @param string $attachment_name name of the attachment to delete
 	* @return object CouchDB attachment removal response
 	*/
-	  public function deleteAttachment ($doc,$attachment_name ) {
-	if ( !is_object($doc) ) throw new InvalidArgumentException ("Document should be an object");
-	    if ( !$doc->_id ) throw new InvalidArgumentException ("Document should have an ID");
-	    if ( !strlen($attachment_name) ) throw new InvalidArgumentException ("Attachment name not set");
-	    $url = '/'.urlencode($this->dbname).
+	public function deleteAttachment ($doc,$attachment_name ) {
+		if ( !is_object($doc) ) {
+			throw new InvalidArgumentException ("Document should be an object");
+		}
+	    if ( !$doc->_id ) {
+	    	throw new InvalidArgumentException ("Document should have an ID");
+	    }
+	    if ( !strlen($attachment_name) ) {
+	    	throw new InvalidArgumentException ("Attachment name not set");
+	    }
+	    $url =  '/'.urlencode($this->dbname).
 	            '/'.urlencode($doc->_id).
 	            '/'.urlencode($attachment_name);
 	    $raw = $this->query('DELETE',$url,array("rev"=>$doc->_rev));
 	    $response = $this->parseRawResponse($raw);
 	    return $response['body'];
-	  }
+	}
 	 
 	/**
 	* remove a document from the database
@@ -650,30 +679,17 @@ class couchClient extends couchBasic {
 	* @param object $doc document to remove
 	* @return object CouchDB document removal response
 	*/
-	  public function deleteDoc ( $doc ) {
-	if ( !is_object($doc) ) throw new InvalidArgumentException ("Document should be an object");
+	public function deleteDoc ( $doc ) {
+		if ( !is_object($doc) ) {
+			throw new InvalidArgumentException ("Document should be an object");
+		}
 	    if ( empty($doc->_id) OR empty($doc->_rev) ) {
 	      throw new Exception("Document should contain _id and _rev");
-	      return FALSE;
+	      return false;
 	    }
-	 
 	    $url = '/'.urlencode($this->dbname).'/'.urlencode($doc->_id).'?rev='.urlencode($doc->_rev);
 	    return $this->_queryAndTest ('DELETE', $url, array(200));
-	  }
-	 
-	 
-	/*
-	 
-	CouchDB views : Please read http://wiki.apache.org/couchdb/HTTP_view_API
-	 
-	This class provides method chaining for query options. As an example :
-	 
-	$view_response = $couchClient->limit(50)->include_docs(TRUE)->getView('blog_posts','order_by_date');
-	 
-	 
-	 
-	*/
-	 
+	}
 	 
 	 
 	/**
@@ -683,10 +699,10 @@ class couchClient extends couchBasic {
 	* @param mixed $value any json encodable thing
 	* @return couchClient $this
 	*/
-	  public function key($value) {
+	public function key($value) {
 	    $this->view_query['key'] = json_encode($value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -695,10 +711,10 @@ class couchClient extends couchBasic {
 	* @param mixed $value any json encodable thing
 	* @return couchClient $this
 	*/
-	  public function startkey($value) {
+	public function startkey($value) {
 	    $this->view_query['startkey'] = json_encode($value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -707,10 +723,10 @@ class couchClient extends couchBasic {
 	* @param mixed $value any json encodable thing
 	* @return couchClient $this
 	*/
-	  public function endkey($value) {
+	public function endkey($value) {
 	    $this->view_query['endkey'] = json_encode($value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -719,10 +735,10 @@ class couchClient extends couchBasic {
 	* @param string $value document id
 	* @return couchClient $this
 	*/
-	  public function startkey_docid($value) {
+	public function startkey_docid($value) {
 	    $this->view_query['startkey_docid'] = (string)$value;
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -731,10 +747,10 @@ class couchClient extends couchBasic {
 	* @param string $value document id
 	* @return couchClient $this
 	*/
-	  public function endkey_docid($value) {
+	public function endkey_docid($value) {
 	    $this->view_query['endkey_docid'] = (string)$value;
 	    return $this;
-	  }
+	}
 	 
 	 
 	/**
@@ -744,10 +760,10 @@ class couchClient extends couchBasic {
 	* @param ineteger $value maximum number of items to fetch
 	* @return couchClient $this
 	*/
-	  public function limit($value) {
+	public function limit($value) {
 	    $this->view_query['limit'] = (int)$value;
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -756,11 +772,12 @@ class couchClient extends couchBasic {
 	* @param string $value has to be 'ok'
 	* @return couchClient $this
 	*/
-	  public function stale($value) {
-	    if ( $value == 'ok' )
-	      $this->view_query['stale'] = $value;
+	public function stale($value) {
+	    if ( $value == 'ok' ) {
+	      	$this->view_query['stale'] = $value;
+	    }
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -769,10 +786,10 @@ class couchClient extends couchBasic {
 	* @param boolean $value order in descending
 	* @return couchClient $this
 	*/
-	  public function descending($value) {
+	public function descending($value) {
 	    $this->view_query['descending'] = json_encode((boolean)$value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -781,10 +798,10 @@ class couchClient extends couchBasic {
 	* @param int $value number of items to skip
 	* @return couchClient $this
 	*/
-	  public function skip($value) {
+	public function skip($value) {
 	    $this->view_query['skip'] = (int)$value;
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -793,10 +810,10 @@ class couchClient extends couchBasic {
 	* @param boolean $value whether to group the results
 	* @return couchClient $this
 	*/
-	  public function group($value) {
+	public function group($value) {
 	    $this->view_query['group'] = json_encode((boolean)$value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -805,10 +822,10 @@ class couchClient extends couchBasic {
 	* @param boolean $value whether to execute the reduce function (if any)
 	* @return couchClient $this
 	*/
-	  public function reduce($value) {
+	public function reduce($value) {
 	    $this->view_query['reduce'] = json_encode((boolean)$value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* CouchDB query option
@@ -817,10 +834,10 @@ class couchClient extends couchBasic {
 	* @param boolean $value whether to include complete documents in the response
 	* @return couchClient $this
 	*/
-	  public function include_docs($value) {
+	public function include_docs($value) {
 	    $this->view_query['include_docs'] = json_encode((boolean)$value);
 	    return $this;
-	  }
+	}
 	 
 	/**
 	* returns couchDB view results as couchDocuments objects
@@ -847,9 +864,13 @@ class couchClient extends couchBasic {
 	* @return object CouchDB view query response
 	*/
 	public function getView ( $id, $name ) {
-		if ( !$id OR !$name ) throw new InvalidArgumentException("You should specify view id and name");
+		if ( !$id OR !$name ) {
+			throw new InvalidArgumentException("You should specify view id and name");
+		}
 		$url = '/'.urlencode($this->dbname).'/_design/'.urlencode($id).'/_view/'.urlencode($name);
-		if ( $this->results_as_cd ) $this->include_docs(true);
+		if ( $this->results_as_cd ) {
+			$this->include_docs(true);
+		}
 		$view_query = $this->view_query;
 		$results_as_cd = $this->results_as_cd;
 		$this->view_query = array();
@@ -879,32 +900,39 @@ class couchClient extends couchBasic {
 	* @return array array of couchDocument objects
 	*/
 	public function resultsToCouchDocuments ( $results ) {
-	if ( !$results->rows or !is_array($results->rows) ) return FALSE;
-	$back = array();
-	foreach ( $results->rows as $row ) { // should have $row->key & $row->doc
-	if ( !$row->key or !$row->doc ) return false;
-	// create couchDocument
-	$cd = new couchDocument($this);
-	$cd->loadFromObject($row->doc);
-	 
-	// set key name
-	if ( is_string($row->key) ) $key = $row->key;
-	elseif ( is_array($row->key) ) {
-	if ( !is_array(end($row->key)) && !is_object(end($row->key)) )
-	$key = end($row->key);
-	else
-	continue;
-	}
-	 
-	// set value in result array
-	if ( isset($back[$key]) ) {
-	if ( is_array($back[$key]) ) $back[$key][] = $cd;
-	else $back[$key] = array($back[$key],$cd);
-	} else {
-	$back[$key] = $cd;
-	}
-	}
-	return $back;
+		if ( !$results->rows or !is_array($results->rows) ) {
+			return false;
+		}
+		$back = array();
+		foreach ( $results->rows as $row ) { // should have $row->key & $row->doc
+			if ( !$row->key or !$row->doc ) {
+				return false;
+			}
+			// create couchDocument
+			$cd = new couchDocument($this);
+			$cd->loadFromObject($row->doc);
+			// set key name
+			if ( is_string($row->key) ) {
+				$key = $row->key;
+			} elseif ( is_array($row->key) ) {
+				if ( !is_array(end($row->key)) && !is_object(end($row->key)) ) {
+					$key = end($row->key);
+				} else {
+					continue;
+				}
+			}
+	 		// set value in result array
+			if ( isset($back[$key]) ) {
+				if ( is_array($back[$key]) ) {
+					$back[$key][] = $cd;
+				} else {
+					$back[$key] = array($back[$key],$cd);
+				}
+			} else {
+				$back[$key] = $cd;
+			}
+		}
+		return $back;
 	}
 	 
 	/**
@@ -916,13 +944,17 @@ class couchClient extends couchBasic {
 	* @param string $view_name view name
 	* @return object CouchDB list query response
 	*/
-	  public function getList ( $id, $name, $view_name ) {
-	if ( !$id OR !$name ) throw new InvalidArgumentException("You should specify list id and name");
-	if ( !$view_name ) throw new InvalidArgumentException("You should specify view name");
-	$url = '/'.urlencode($this->dbname).'/_design/'.urlencode($id).'/_list/'.urlencode($name).'/'.urlencode($view_name);
-	$view_query = $this->view_query;
-	$this->results_as_cd = false;
-	$this->view_query = array();
+	public function getList ( $id, $name, $view_name ) {
+		if ( !$id OR !$name ) {
+			throw new InvalidArgumentException("You should specify list id and name");
+		}
+		if ( !$view_name ) {
+			throw new InvalidArgumentException("You should specify view name");
+		}
+		$url = '/'.urlencode($this->dbname).'/_design/'.urlencode($id).'/_list/'.urlencode($name).'/'.urlencode($view_name);
+		$view_query = $this->view_query;
+		$this->results_as_cd = false;
+		$this->view_query = array();
 	    return $this->_queryAndTest ('GET', $url, array(200),$view_query);
 	}
 	 
@@ -936,15 +968,15 @@ class couchClient extends couchBasic {
 	* @return object CouchDB _all_docs response
 	*/
 	public function getAllDocs ( $keys = array() ) {
-	$url = '/'.urlencode($this->dbname).'/_all_docs';
-	$view_query = $this->view_query;
-	$this->view_query = array();
-	$method = 'GET';
-	$data = null;
-	if ( count($keys) ) {
-	$method = 'POST';
-	$data = json_encode(array('keys'=>$keys));
-	}
+		$url = '/'.urlencode($this->dbname).'/_all_docs';
+		$view_query = $this->view_query;
+		$this->view_query = array();
+		$method = 'GET';
+		$data = null;
+		if ( count($keys) ) {
+			$method = 'POST';
+			$data = json_encode(array('keys'=>$keys));
+		}
 	    return $this->_queryAndTest ($method, $url, array(200),$view_query,$data);
 	}
 	 
@@ -954,12 +986,12 @@ class couchClient extends couchBasic {
 	* @return object CouchDB _all_docs_by_seq response
 	*/
 	public function getAllDocsBySeq () {
-	$url = '/'.urlencode($this->dbname).'/_all_docs_by_seq';
-	$view_query = $this->view_query;
-	$this->view_query = array();
+		$url = '/'.urlencode($this->dbname).'/_all_docs_by_seq';
+		$view_query = $this->view_query;
+		$this->view_query = array();
 	    return $this->_queryAndTest ('GET', $url, array(200),$view_query);
 	}
-	}
+}
 	 
 /**
 * customized Exception class for CouchDB errors
@@ -1104,7 +1136,7 @@ class couchDocument {
 		if (!strlen($key) ) {
 			throw new InvalidArgumentException("No key given");
 		}
-		return property_exists( $this->__couch_data->fields,$key ) ? $this->__couch_data->fields->$key : NULL;
+		return property_exists( $this->__couch_data->fields,$key ) ? $this->__couch_data->fields->$key : null;
 	}
 	 
 	/**
@@ -1127,14 +1159,21 @@ class couchDocument {
 	*/
 	protected function setOne ($key, $value ) {
 		$key = (string)$key;
-		if ( !strlen($key) ) throw new InvalidArgumentException("property name can't be empty");
-		if ( $key == '_rev' ) throw new InvalidArgumentException("Can't set _rev field");
-		if ( $key == '_id' AND $this->get('_id') ) throw new InvalidArgumentException("Can't set _id field because it's already set");
-		if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) )
-		throw new InvalidArgumentException("Property $key can't begin with an underscore");
+		if ( !strlen($key) ) {
+			throw new InvalidArgumentException("property name can't be empty");
+		}
+		if ( $key == '_rev' ) {
+			throw new InvalidArgumentException("Can't set _rev field");
+		}
+		if ( $key == '_id' AND $this->get('_id') ) {
+			throw new InvalidArgumentException("Can't set _id field because it's already set");
+		}
+		if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) ) {
+			throw new InvalidArgumentException("Property $key can't begin with an underscore");
+		}
 		//echo "setting $key to ".print_r($value,TRUE)."<BR>\n";
 		$this->__couch_data->fields->$key = $value;
-		return TRUE;
+		return true;
 	}
 	 
 	/**
@@ -1169,7 +1208,9 @@ class couchDocument {
 	*/
 	public function set ( $key , $value = NULL ) {
 		if ( func_num_args() == 1 ) {
-			if ( !is_array($key) AND !is_object($key) ) throw new InvalidArgumentException("When second argument is null, first argument should ba an array or an object");
+			if ( !is_array($key) AND !is_object($key) ) {
+				throw new InvalidArgumentException("When second argument is null, first argument should ba an array or an object");
+			}
 			foreach ( $key as $one_key => $one_value ) {
 				$this->setOne($one_key,$one_value);
 			}
@@ -1177,7 +1218,7 @@ class couchDocument {
 			$this->setOne($key,$value);
 		}
 		$this->record();
-		return TRUE;
+		return true;
 	}
 	 
 	/**
@@ -1214,13 +1255,17 @@ class couchDocument {
 	*/
 	public function remove($key) {
 		$key = (string)$key;
-		if ( !strlen($key) ) throw new InvalidArgumentException("Can't remove a key without name");
-		if ( $key == '_id' OR $key == '_rev' ) return FALSE;
+		if ( !strlen($key) ) {
+			throw new InvalidArgumentException("Can't remove a key without name");
+		}
+		if ( $key == '_id' OR $key == '_rev' ) {
+			return false;
+		}
 		if ( isset($this->$key) ) {
 			unset($this->__couch_data->fields->$key);
 			$this->record();
 		}
-		return TRUE;
+		return true;
 	}
 	 
 	/**
