@@ -79,6 +79,7 @@ $_SETTINGS = array	(
         //#########################################################
 		// Absolute paths
 		'path_install'							=> $strInstallPath,
+		'path_share'							=> $strInstallPath.'share/',
         'path_status'           				=> $strInstallPath.'upload/status/',
 		'path_web'            					=> $strInstallPath.'web/',
 		'path_css'            					=> $strInstallPath.'web/share/css/',

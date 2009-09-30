@@ -39,20 +39,25 @@ class openDocument extends openWebX {
 	 * 
 	 * @access public
 	 */
-	public 	$data 		= array();
+	public $data 			= array();
 	/**
 	 * the document object
 	 * 
 	 * @access private
 	 */
-	private $docObject	= null;
+	private $docObject		= null;
 	/**
 	 * the database object
 	 * 
 	 * @access private
 	 */
-	private $dbObject	= null;
-	
+	private $dbObject		= null;
+	/**
+	 * document attachments
+	 * 
+	 * @access private
+	 */
+	private $docAttachments	= array();
 	
 	
 	
@@ -67,10 +72,13 @@ class openDocument extends openWebX {
 	public function __construct($strID,$strType) {
 		$this->dbObject 	= new openDB();
 		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
-		if (!$this->load()) {
+		$retVal				= $this->load();
+		if (!$retVal) {
 			$this->docObject 	= new StdClass();
 			$this->type			= openFilter::filterAction('clean','string',$strType);
-		}	
+			$this->_attachments = new StdClass();
+		}
+		return $retVal;	
 	}
 	
 	/**
@@ -113,6 +121,26 @@ class openDocument extends openWebX {
 	 */
 	public function load() {
 		return ($this->docObject = $this->dbObject->dbGetByID($this->data['_id'])) ? true : false;
+	}
+	
+	public function addAttachment($strName,$mixedContent,$strType='application/octet-stream') {
+		$strName 						= openFilter::filterAction('clean','string',$strName);
+		if (!$this->hasAttachment($strName)) {
+			$myAttachment 					= new StdClass();
+			$myAttachment->content_type 	= openFilter::filterAction('clean','string',$strType);
+			$myAttachment->data				= base64_encode($mixedContent);
+			$this->_attachments->$strName 	= $myAttachment;
+		}	
+	}
+	
+	public function hasAttachment($strName) {
+		$strName = openFilter::filterAction('clean','string',$strName);
+		return (isset($this->docObject->_attachments) && isset($this->docObject->_attachments->$strName)) ? true : false;
+	}
+	
+	public function getAttachmentURL($strName) {
+		$strName = openFilter::filterAction('clean','string',$strName);
+		return 'http://'.Settings::get('database_server').':'.Settings::get('database_port').'/'.Settings::get('database_name').'/'.$this->_id.'/'.$strName;
 	}
 	
 	/**

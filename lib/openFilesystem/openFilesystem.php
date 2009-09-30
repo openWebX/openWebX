@@ -253,6 +253,19 @@ class openFilesystem extends openWebX implements openObject {
     	if (!$error) $retVal = $dest;
     	return $retVal;
     }
+    
+    public function fileGetMimeType($strFilename) {
+    	$fileext = substr(strrchr($strFilename, '.'), 1);
+   		if (empty($fileext)) return (false);
+   		$regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
+   		$lines = file(Settings::get('path_share').'mime.types', FILE_IGNORE_NEW_LINES);
+   		foreach($lines as $line) {
+      		if (substr($line, 0, 1) == '#') continue; // skip comments
+      		if (!preg_match($regex, $line, $matches)) continue; // no match to the extension
+      		return ($matches[1]);
+   		}
+   		return (false);  // no match at all
+    }
 
 }
 

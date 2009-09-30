@@ -5,6 +5,8 @@ window.addEvent('domready',function(){
 	Clientcide.setAssetLocation('/share/images/icons/Assets');
 	var myObj = new openWebX();
 	
+	myObj.initLoaders();
+	
 	// Make PNGs looking better in IE<7
 	myObj.fixPNGs();
 	
@@ -24,10 +26,23 @@ var openWebX = new Class({});
 
 openWebX.implement({
 //###############################################################################################
+	initLoaders: function() {
+		$$('div').each(function(item) {
+			var myLoad = false;
+			if (myLoad = item.getProperty('load')) {
+				var myID = item.getProperty('id');
+				var itemWaiter = new Waiter($(myID));
+				itemWaiter.start();
+				item.load('request.php?request='+myLoad).chain(function() {
+					alert ('done!');
+				});
+				//itemWaiter.stop();
+			}
+		});
+	},
     fixPNGs: function() {
     	Browser.scanForPngs('body');
     	$$('img').each(function(item){
-    		alert(item);
     		if (item.hasClass('fixPNG')) Browser.fixPNG(item);
     	});
 	},

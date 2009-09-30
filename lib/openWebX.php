@@ -26,9 +26,14 @@ class Settings extends openWebX {
    * @param string strName name of the settings-variable
    * @return mixed value of the settings-variable
    */
-  static function get($strName) {
-    return ((isset($_SESSION['openWebX']['settings'][$strName]) ? $_SESSION['openWebX']['settings'][$strName] : NULL));
-  }
+  	static function get($strName) {
+    	return ((isset($_SESSION['openWebX']['settings'][$strName]) ? $_SESSION['openWebX']['settings'][$strName] : NULL));
+  	}
+}
+class Extension extends openWebX {
+	static function installed($strName) {
+		return ((in_array($strName,$_SESSION['openWebX']['extensions']) ? TRUE : FALSE));
+	}	
 }
 
 /**
@@ -48,10 +53,16 @@ require_once('statements_'.strtolower(Settings::get('database_type')).'.php');
 */
 function __autoload($strLibName) {
     $strLibName = strval(trim($strLibName));
+    if (strpos($strLibName,'_')!==false) {
+    	$tmpArr 		= explode('_',$strLibName);
+    	$strLibFolder 	= $tmpArr[0];
+    	$strLibName		= $strLibName;	
+    } else {
+    	$strLibFolder	= $strLibName;
+    }
     if ($strLibName!='openWebX') {
-        $loadLib = Settings::get('path_lib').$strLibName.'/'.$strLibName.'.php';
-        //echo 'Trying to load '.$loadLib;
-        require($loadLib);
+        $loadLib = Settings::get('path_lib').$strLibFolder.'/'.$strLibName.'.php';
+        require_once($loadLib);
     }
 }
 
@@ -102,7 +113,7 @@ class openWebX {
             if (array_key_exists($strVariable,$this->data)) {
                 return $this->data[$strVariable];
             } else {
-                throw new openException (EXCEPTION_OBJECT_GETERROR,'GET: Variable is not defined: '.$strVariable);
+                throw new openException (EXCEPTION_OBJECT_GETERROR,'Variable is not defined: '.$strVariable);
             }
         } catch (Exception $e) {
             $e->errHandling();
@@ -135,7 +146,7 @@ class openWebX {
 
     final public function __call($strFunction,$arrParams) {
       try {
-        throw new openException (EXCEPTION_OBJECT_CALLERROR, 'CALL: Function does not exist or is not public: '. $strFunction."(".implode(", ", $arrParams).")");
+        throw new openException (EXCEPTION_OBJECT_CALLERROR, 'Function does not exist or is not public: '. $strFunction."(".implode(", ", $arrParams).")");
       } catch (Exception $e) {
         $e->errHandling();
       }
@@ -152,12 +163,14 @@ class openWebX {
   	final public function registerSlot($objRegistrar,$strSlotName,$iPriority=0) {
   		$myHash 		= md5(get_class($objRegistrar).$strSlotName);
   		$slot 			= new openDocument($myHash,'slot');
-  		$slot->_id 		=  $myHash;
-  		$slot->type		= 'slot';
-  		$slot->object	= get_class($objRegistrar);
-  		$slot->slot		= $strSlotName;
-  		$slot->priority	= $iPriority;
-  		$slot->save();
+  		if (!$slot) {
+	  		$slot->_id 		=  $myHash;
+	  		$slot->type		= 'slot';
+	  		$slot->object	= get_class($objRegistrar);
+	  		$slot->slot		= $strSlotName;
+	  		$slot->priority	= $iPriority;
+	  		$slot->save();
+  		}
   		unset($slot);
   	}
 

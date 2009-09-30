@@ -2,6 +2,8 @@
 error_reporting(E_ALL);
 require_once('openWebX.php');
 
+echo 'drin!';
+
 if (isset($_GET['request'])) {
 	$myRequest 		= explode('/',$_GET['request']);
 	$arrHandlers	= array();

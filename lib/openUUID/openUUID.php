@@ -113,14 +113,7 @@ class openUUID {
 	 }
 	
 	 protected static function mintTime($node = NULL) {
-	  /* Generates a Version 1 UUID.  
-	     These are derived from the time at which they were generated. */
-	  // Get time since Gregorian calendar reform in 100ns intervals
-	  // This is exceedingly difficult because of PHP's (and pack()'s) 
-	  //  integer size limits.
-	  // Note that this will never be more accurate than to the microsecond.
-	  $time = microtime(1) * 10000000 + self::interval;
-	  // Convert to a string representation
+	  	$time = microtime(1) * 10000000 + self::interval;
 	  $time = sprintf("%F", $time);
 	  preg_match("/^\d+/", $time, $time); //strip decimal point
 	  // And now to a 64-bit binary representation

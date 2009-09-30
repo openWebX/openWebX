@@ -42,7 +42,6 @@ class openHTML_Body_Image extends openWebX implements openObject {
         	$myImg->$key = $val;
         }
         $retVal = $myImg->build();
-        //echo $retVal;
         $this->isBuilt		= true;
         unset ($myImg);
         return $retVal;

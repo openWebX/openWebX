@@ -71,17 +71,29 @@ class openMicroblog extends openWebX implements openObject {
 	}
 
 	private function mbShow() {
-		openDebug::dbgVar($this->mbEntries);
 		foreach ($this->mbEntries as $entry) {
+			$myEntry = new openHTML_Tag('p');
+			$myEntry->id			= 'entry_'.$entry->_id;
+			$myEntry->class 		= 'openMicroblog_entry';
+				
+				$myImage 			= new openHTML_Body_Image('img_'.$entry->_id);
+				$myImage->class		= 'openMicroblog_image';
+				$myImage->src		= '/share/images/icons/openMicroblog/'.$entry->service.'.png';
+				
+				$myTitle			= new openHTML_Tag('p');
+				$myTitle->id		= 'title_'.$entry->_id;
+				$myTitle->class 	= 'openMicroblog_title';
+				$myTitle->content	= $entry->author.' ('.date('d.m.Y H:i:s',strtotime($entry->created)).')';
+				
+				$myContent			= new openHTML_Tag('p');
+				$myContent->id		= 'content_'.$entry->_id;
+				$myContent->class 	= 'openMicroblog_content';
+				$myContent->content	= openString::strConvertLinks($entry->content);
 			
-			echo '
-			<p class="openMicroblog_entry">
-				<img src="/share/images/icons/openMicroblog/'.$entry->service.'.png" style="float:left;" />
-				<p class="openMicroblog_title">'.$entry->author.' ('.date('d.m.Y H:i:s',strtotime($entry->created)).')</p>
-				<p class="openMicroblog_content">'.openString::strConvertLinks($entry->content).'</p>
-			</p>
-			';
-			//unset ($myTag);
+			$myEntry->content		= $myImage->build().$myTitle->build().$myContent->build();
+			echo $myEntry->build();
+			unset ($myEntry,$myTitle,$myContent,$myImage);
+			
 		}
 	}
 
@@ -89,6 +101,7 @@ class openMicroblog extends openWebX implements openObject {
 		$myDB = new openDB();
 		$tmpRet = $myDB->dbGetByField('microblog','date',null,$iLimit,true);
 		unset($myDB);
+		$this->mbEntries = array();
 		foreach ($tmpRet->rows as $key=>$val) {
 			$this->mbEntries[] = $val->value;	
 		}

@@ -28,6 +28,16 @@
  * 
  */
 $_SESSION['openWebX']['views'] = array(
+	'_design/docs'		=> '
+			{
+				"all": {
+					"map": "function(doc) { emit(doc._id, doc) }"
+				},
+				"by_type": {
+					"map": "function(doc) { emit(doc.type, doc) }"
+				}
+			}
+	',
 	'_design/slot'		=> '
   			{
     			"all": {

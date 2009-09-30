@@ -22,21 +22,6 @@
 // # Revision: $Revision: 217 $
 // ########################################################################
 
-/**
- * include the child-elements
- */
-require_once(str_replace('openHTML.php','openHTML_Tag.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Head.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Table.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Fieldset.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Div.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Form.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_List.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Image.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Body_Link.php',__FILE__));
-require_once(str_replace('openHTML.php','openHTML_Foot.php',__FILE__));
-
 
 /**
 * openHTML
@@ -51,9 +36,9 @@ require_once(str_replace('openHTML.php','openHTML_Foot.php',__FILE__));
 */
 class openHTML extends openWebX implements openObject {
 
-  	protected $data = array();
-  	private $isGetted = false;
-  	private $isShown = false;
+  	protected $data 	= array();
+  	private $isGetted 	= false;
+  	private $isShown 	= false;
 
   	public function __construct() {
     	$this->head = new openHTML_Head();
