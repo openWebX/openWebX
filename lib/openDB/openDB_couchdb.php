@@ -24,15 +24,14 @@
 // # Date: $Date: 2009-09-10 08:03:02 +0200 (Thu, 10 Sep 2009) $
 // ########################################################################
 /**
-* openDB_couchDB
+* openDB
 *
 * Part of the openWebX-API
 * This class is stable
-* @author Jens Reinemuth <jens@openos.de>
-* @version $Id: openDB_couchdb.php 235 2009-09-10 06:03:02Z jens $
+* @author Jens Reinemuth <jens@reinemuth.info>
+* @version $Id$
 * @package openWebX
 * @subpackage openDB
-* @uses openWebX
 */
 class openDB extends openDB_Abstract {
 	
@@ -43,39 +42,46 @@ class openDB extends openDB_Abstract {
 	 */
 	public $data 			= array();
 	
+	/**
+	 * database object
+	 * 
+	 * @access private
+	 */
 	private $dbObject		= null;
 	
+	/**
+	 * constructor
+	 * 
+	 * set variables from settings-file and connect to the database
+	 * 
+	 * @access public
+	 * @param void
+	 * @return void
+	 */
 	public function __construct() {
 		$this->dbSetVariables();
 		$this->dbConnect();
 	}
 	
+	/**
+	 * destructor
+	 * 
+	 * disconnect from database
+	 * 
+	 * @access public
+	 * @param void
+	 * @return void
+	 */
 	public function __destruct() {
 		$this->dbDisconnect();
 	}
 	
-	
-	public function dbCreateStructure() {
-		if (!$this->dbObject->databaseExists($this->data['dbDatabase'])) {
-			$this->dbObject->createDatabase($this->data['dbDatabase']);
-		}
-		foreach ($_SESSION['openWebX']['views'] as $key=>$val) {
-			if (!$this->dbGetByID($key)) {
-				$myDoc = new StdClass();
-				$myDoc->_id=$key;
-				$myDoc->language='javascript';
-				$myDoc->views = json_decode($val);
-				$this->dbStore($myDoc);
-			}	
-		}
-	}
-	
-
-	
+	/**
+	 * store document-object in cocuhDB
+	 * 
+	 */
 	public function dbStore($objContent) {
-		if (!is_object($objContent)) {
-			throw new InvalidArgumentException ("Content should be an object");
-		}
+		openFilter::check('object',$objContent);
 		if (!$this->dbObject->getDoc($objContent->_id)) {
 			$this->dbObject->storeDoc($objContent);
 		}
@@ -131,6 +137,28 @@ class openDB extends openDB_Abstract {
 	private function dbTestServer() {
 		
 	}
+	
+	/**
+	 * creating all needed items in database
+	 * 
+	 * @access private
+	 * @param void
+	 * @return void
+	 */
+	private function dbCreateStructure() {
+		if (!$this->dbObject->databaseExists($this->data['dbDatabase'])) {
+			$this->dbObject->createDatabase($this->data['dbDatabase']);
+		}
+		foreach ($_SESSION['openWebX']['views'] as $key=>$val) {
+			if (!$this->dbGetByID($key)) {
+				$myDoc = new StdClass();
+				$myDoc->_id=$key;
+				$myDoc->language='javascript';
+				$myDoc->views = json_decode($val);
+				$this->dbStore($myDoc);
+			}	
+		}
+	}
 
 }
 
@@ -173,8 +201,18 @@ class openDB extends openDB_Abstract {
 
 
 
-
-class couchBasic {
+/**
+* openDB_couchBasic
+*
+* Part of the openWebX-API
+* This class is stable
+* @author Jens Reinemuth <jens@openos.de>
+* @version $Id: openDB_couchdb.php 235 2009-09-10 06:03:02Z jens $
+* @package openWebX
+* @subpackage openDB
+* @uses openWebX
+*/
+class openDB_couchBasic {
 
  	/**
 	* string database server hostname
@@ -329,8 +367,6 @@ class couchBasic {
 		}
 		$raw_response = $this->_execute($request);
 		$this->_disconnect();
-	    //log_message('debug',"COUCH : Executed query $method $url");
-	    //log_message('debug',"COUCH : ".$raw_response);
 		return $raw_response;
 	}
 	 
@@ -401,6 +437,24 @@ class couchBasic {
 	}
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
 * CouchDB client class
 *
@@ -409,7 +463,7 @@ class couchBasic {
 *
 *
 */
-class couchClient extends couchBasic {
+class openDB_couchClient extends couchBasic {
 	/**
 	* @var string database server hostname
 	*/
@@ -557,7 +611,7 @@ class couchClient extends couchBasic {
 			throw new InvalidArgumentException ("Document should be an object");
 		}
 		foreach ( array_keys(get_object_vars($doc)) as $key ) {
-			if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) ) {
+			if ( substr($key,0,1) == '_' AND !in_array($key,openDB_couchClient::$allowed_underscored_properties) ) {
 				throw new InvalidArgumentException("Property $key can't begin with an underscore");
 			}
 		}
@@ -909,7 +963,7 @@ class couchClient extends couchBasic {
 				return false;
 			}
 			// create couchDocument
-			$cd = new couchDocument($this);
+			$cd = new openDB_couchDocument($this);
 			$cd->loadFromObject($row->doc);
 			// set key name
 			if ( is_string($row->key) ) {
@@ -1001,7 +1055,7 @@ class couchClient extends couchBasic {
 * and adds a method getBody() to fetch the body sent by the server (if any)
 *
 */
-class couchException extends Exception {
+class openDB_couchException extends Exception {
     // couchDB response once parsed
     protected $couch_response = array();
 	 
@@ -1011,7 +1065,7 @@ class couchException extends Exception {
 	* @param string $raw_response HTTP response from the CouchDB server
 	*/
     function __construct($raw_response) {
-        $this->couch_response = couchBasic::parseRawResponse($raw_response);
+        $this->couch_response = openDB_couchBasic::parseRawResponse($raw_response);
         parent::__construct($this->couch_response['status_message'],$this->couch_response['status_code']);
     }
 	 
@@ -1028,7 +1082,7 @@ class couchException extends Exception {
     }
 }
 	
-class couchDocument {
+class openDB_couchDocument {
 	 
 	/**
 	* @var stdClass object internal data
@@ -1041,7 +1095,7 @@ class couchDocument {
 	* @param couchClient $client couchClient connection object
 	*
 	*/
-	function __construct(couchClient $client) {
+	function __construct(openDB_couchClient $client) {
 		$this->__couch_data->client = $client;
 		$this->__couch_data->fields = new stdClass();
 	}
@@ -1081,8 +1135,8 @@ class couchDocument {
 	* @param string $id id of the document to load
 	* @return couchDocument couch document loaded with data of document $id
 	*/
-	public static function getInstance(couchClient $client,$id) {
-		$back = new couchDocument($client);
+	public static function getInstance(openDB_couchClient $client,$id) {
+		$back = new openDB_couchDocument($client);
 		return $back->load($id);
 	}
 	 
@@ -1168,7 +1222,7 @@ class couchDocument {
 		if ( $key == '_id' AND $this->get('_id') ) {
 			throw new InvalidArgumentException("Can't set _id field because it's already set");
 		}
-		if ( substr($key,0,1) == '_' AND !in_array($key,couchClient::$allowed_underscored_properties) ) {
+		if ( substr($key,0,1) == '_' AND !in_array($key,openDB_couchClient::$allowed_underscored_properties) ) {
 			throw new InvalidArgumentException("Property $key can't begin with an underscore");
 		}
 		//echo "setting $key to ".print_r($value,TRUE)."<BR>\n";
