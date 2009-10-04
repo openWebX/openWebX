@@ -34,6 +34,16 @@
 */
 class openFilter extends openWebX {
 
+	public static function check($strType,$mixedValue) {
+		switch (strtolower(strval($strType))) {
+			case 'object':
+				if (!is_object($mixedValue)) {
+					throw new InvalidArgumentException ('Variable is not an object!');	
+				}
+				break;	
+		}
+	}
+
 
 	public static function filterAction($strAction,$strType,$mixedOrig) {
 		$retVal = false;
