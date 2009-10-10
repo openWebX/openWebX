@@ -40,6 +40,11 @@ class openFilter extends openWebX {
 				if (!is_object($mixedValue)) {
 					throw new InvalidArgumentException ('Variable is not an object!');	
 				}
+				break;
+			case 'hasvalue':
+				if ( !strlen($mixedValue) ) {
+					throw new InvalidArgumentException ('no data to parse');
+				}
 				break;	
 		}
 	}

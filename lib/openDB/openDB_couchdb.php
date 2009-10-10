@@ -124,7 +124,7 @@ class openDB extends openDB_Abstract {
 	}
 	
 	private function dbConnect() {
-		$this->dbObject = new couchClient($this->data['dbServer'],$this->data['dbPort'],$this->data['dbDatabase']);
+		$this->dbObject = new openDB_couchClient($this->data['dbServer'],$this->data['dbPort'],$this->data['dbDatabase']);
 		//if (!$this->dbObject->databaseExists($this->data['dbDatabase'])) {
 			$this->dbCreateStructure();
 		//}
@@ -145,7 +145,7 @@ class openDB extends openDB_Abstract {
 	 * @param void
 	 * @return void
 	 */
-	private function dbCreateStructure() {
+	public function dbCreateStructure() {
 		if (!$this->dbObject->databaseExists($this->data['dbDatabase'])) {
 			$this->dbObject->createDatabase($this->data['dbDatabase']);
 		}
@@ -256,9 +256,7 @@ class openDB_couchBasic {
 	* @return array CouchDB response
 	*/
 	public static function parseRawResponse($raw_data, $json_as_array = FALSE) {
-		if ( !strlen($raw_data) ) {
-			throw new InvalidArgumentException("no data to parse");
-		}
+		openFilter::check('hasvalue',$raw_data);
 		$response = array();
 		list($headers, $body) = explode("\r\n\r\n", $raw_data);
 		$status_line = reset(explode("\n",$headers));
@@ -463,7 +461,7 @@ class openDB_couchBasic {
 *
 *
 */
-class openDB_couchClient extends couchBasic {
+class openDB_couchClient extends openDB_couchBasic {
 	/**
 	* @var string database server hostname
 	*/
