@@ -13,7 +13,6 @@ class openImage extends openWebX implements openObject {
 		$this->registerSlots();
 		if ($strQueue) {
 			$arrQueue = explode('/',$strQueue);
-			print_r($arrQueue);
 			$this->imgProcess($arrQueue);	
 		}
 	}
@@ -38,7 +37,6 @@ class openImage extends openWebX implements openObject {
 		if (Extension::installed('gmagick')) {
 			$this->imgObject = new openImage_gmagick();
 		} elseif (Extension::installed('imagick')) {
-			echo 'initializing...';
 			$this->imgObject = new openImage_imagick($strFile);
 		} else {
 			$this->imgObject = new openImage_gd();
@@ -66,9 +64,19 @@ class openImage extends openWebX implements openObject {
 		$this->imgHash 		= md5($fileName);
 		$this->imgParams	= md5(serialize($arrParams));
 		$this->docObject 	= new openDocument($this->imgHash,'image');
-		//if ($this->docObject) {
-		
-		//} else {
+		if ($this->docObject && $this->docObject->hasAttachment($this->imgParams)) {
+			$imgURI = $this->docObject->getAttachmentURL($this->imgParams);
+			if (!in_array('show',$arrParams)) {
+				return $imgURI;	
+			} else {
+				$myImg 		= new openHTML_Tag('img',true);
+				$myImg->id 	= 'img_'.$this->imgParams;
+				$myImg->src	= $imgURI;
+				$retVal 	= $myImg->build();
+				unset ($myImg);
+				echo $retVal;
+			}
+		} else {
 			if ($this->imgFindFile($fileName)) {
 				$this->initObject($this->imgFile);
 				unset ($arrParams[0]);
@@ -93,7 +101,6 @@ class openImage extends openWebX implements openObject {
 						   	$this->imgObject->imgScale($size[0],$size[1]);
 	                       	break;
 	                    case 'show':
-	                    	echo 'Showing';
 	                        $this->imgShow();
 	                        break;
 	                    case 'save':
@@ -104,12 +111,16 @@ class openImage extends openWebX implements openObject {
 			} else {
 				echo 'Image not found!';	
 			}
-		//}
+		}
 	}
 	
 	private function imgShow() {
 		$this->imgSave();
-		echo '<img src="'.$this->docObject->getAttachmentURL($this->imgParams).'" />';
+		$myImg 		= new openHTML_Tag('img',true);
+		$myImg->id 	= 'img_'.$this->imgParams;
+		$myImg->src	= $this->docObject->getAttachmentURL($this->imgParams);
+		echo $myImg->build();
+		unset ($myImg);
 	}
 	
 	private function imgSave() {
