@@ -64,6 +64,16 @@ $_SESSION['openWebX']['views'] = array(
     			}
 			}
 	',
+	'_design/lists'	=> '
+			{
+				"all": {
+      				"map": "function(doc) { if (doc.type == \'list\')  emit(doc._id, doc) }"
+    			},
+    			"by_title": {
+      				"map": "function(doc) { if (doc.type == \'list\')  emit(doc.title, doc) }"
+    			}
+			}
+	',
 );
 
 ?>
