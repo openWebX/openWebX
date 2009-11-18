@@ -5,9 +5,19 @@ require_once('openWebX.php');
 //openDebug::dbgVar($_SESSION);
 
 $myHTML = new openHTML();
+$myUI = new openUI();
 
-$myImage = new openImage('dsc00008.jpg/greyscale/show');
 
-unset($myHTML);
+$myTabs = array();
+$myTabs[] = 'personal';
+$myTabs[] = 'contact';
+$myTabs[] = 'blahfasel';
+
+//$Tabber = $myHTML->body->add('div','tabber');
+//$Tabber->content .= $myUI->uiTabs($myTabs);
+echo $myUI->uiTabs($myTabs);
+
+
+unset($myUI,$myHTML);
 
 ?>

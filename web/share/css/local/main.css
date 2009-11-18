@@ -1,5 +1,5 @@
 body {
-	background:#a9bf4f url(/share/images/bg.png) bottom right no-repeat;
+	background:#fff url(/share/images/bg.png) bottom right no-repeat;
 	height:100%;
 	width:100%;
 }
@@ -76,3 +76,4 @@ ul li {
 	margin-top:300px;
 	margin-left:-280px;
 }
+

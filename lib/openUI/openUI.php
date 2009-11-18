@@ -192,24 +192,70 @@ class openUI extends openWebX {
     }
 
     public function uiWheel($strTitle,$arrElements) {
-    	$retVal = '';
-    	$strTitle = openFilter::filterAction('clean','string',$strTitle);
-    	$retVal.='<div id="uiWheel_'.$strTitle.'" class="loading magicwheel">';
+    	$retVal 		= '';
+    	$strTitle 		= openFilter::filterAction('clean','string',$strTitle);
+    	$myDiv 			= new openHTML_Tag('div');
+    	$myDiv->id 		= 'uiWheel_'.$strTitle;
+    	$myDiv->class	= 'loading magicwheel';
+    	$myDiv->content = '';
     	for ($i=0;$i<count($arrElements);$i++) {
-    		$retVal.= '<a href="/share/images/pictures/'.$arrElements[$i]['image'].'" title="'.$arrElements[$i]['title'].'"><img class="icon" src="/share/images/pictures/'.$arrElements[$i]['image'].'" /></a>';
+    		$myImage		= Settings::get('web_images').'pictures/'.$arrElements[$i]['image'];
+    		$myLink 		= new openHTML_Tag('a');
+    		$myLink->href 	= $myImage;
+    		$myLink->title	= $arrElements[$i]['title'];
+    		$myImg			= new openHTML_Tag('img',true);
+    		$myImg->src		= $myImage;
+    		$myImg->class	= 'icon';
+    		$myLink->content= $myImg->build();
+    		$myDiv->content.= $myLink->build();
+    		unset($myImg,$myLink);
     	}
-    	$retVal.='</div>';
+    	$retVal = $myDiv->build();
+    	unset($myDiv);
     	return $retVal;
     }
     
     public function uiMessagingButton($strTitle,$strText,$strLink,$strType) {
-    	$retVal = '';
-    	$strTitle 	= openFilter::filterAction('clean','string',$strTitle);
-    	$strText	= openFilter::filterAction('clean','string',$strText);
-    	$strLink 	= openFilter::filterAction('clean','string',$strLink);
-    	$strType	= strtolower(openFilter::filterAction('clean','string',$strType));
-    	$retVal.='<a id="uiMessagingButton_'.$strTitle.'" class="messaging-button" href="'.$strLink.'"><img src="/share/images/icons/openMessage/'.$strType.'.png" alt="Button" />'.$strText.'</a>';
+    	$retVal 		= '';
+    	$strTitle 		= openFilter::filterAction('clean','string',$strTitle);
+    	$strText		= openFilter::filterAction('clean','string',$strText);
+    	$strLink 		= openFilter::filterAction('clean','string',$strLink);
+    	$strType		= strtolower(openFilter::filterAction('clean','string',$strType));
+    	$myLink			= new openHTML_Tag('a');
+    	$myLink->id		= 'uiMessagingButton_'.$strTitle;
+    	$myLink->class	= 'messaging-button';
+    	$myLink->href	= $strLink;
+    	$myImg			= new openHTML_Tag('img',true);
+    	$myImg->src		= Settings::get('web_images').'icons/openMessage/'.$strType.'.png';
+    	$myImg->alt		= $strText;
+    	$myLink->content= $myImg->build();
+    	$myLink->content.=$strText;
+    	$retVal			= $myLink->build();
+    	unset($myImg,$myLink);
     	return $retVal;
+    }
+    
+    public function uiTabs($arrTabs) {
+    	$retVal 			= '';
+    	$myTabber 			= new openHTML_Tag('div');
+    	$myTabber->id 		= 'tabber_'.md5(microtime());
+    	$mytabber->class	= 'tabber';
+    	foreach ($arrTabs as $val) {
+    		$val 			= strtolower(openFilter::filterAction('clean','string',$val));
+    		$divTab 		= new openHTML_Tag('div');
+    		$divTab->id 	= 'tab_'.$val;
+    		$divTab->class	= 'tab passive';
+       		$imgTab 		= new openHTML_Tag('img',true);
+    		$imgTab->src 	= (file_exists(Settings::get('path_images').'icons/Tabs/'.$val.'.png')) ? Settings::get('web_images').'icons/Tabs/'.$val.'.png' : Settings::get('web_images').'icons/Tabs/unknown.png';
+    		$imgTab->class	= 'passive';
+       		$divTab->content.= $imgTab->build();
+   	   		unset ($imgTab);
+       		$myTabber->content .= $divTab->build();
+    		unset($divTab);
+    	}
+    	$retVal = $myTabber->build();
+    	unset($myTabber);
+    	return ($retVal);
     }
     
 }

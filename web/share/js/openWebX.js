@@ -15,6 +15,9 @@ window.addEvent('domready',function(){
 
 	// Add Datepickers
 	myObj.formDatepickers();
+	
+	// Prepare Tabs
+	myObj.tabInit();
 
 });
 
@@ -58,6 +61,33 @@ openWebX.implement({
 				format: myFormat
 			});
 		});
+	},
+	tabInit: function() {
+		$$('div[id^=tab_]').each(function(item){
+			var myImg = item.getElement('img');
+			item.addEvent('mouseenter',function(e){
+				if (item.hasClass('passive')) {
+					item.removeClass('passive');
+					item.addClass('active');
+				}
+				if (myImg.hasClass('passive')) {
+					myImg.removeClass('passive');
+					myImg.addClass('active');
+				}
+			});
+			item.addEvent('mouseleave',function(e){
+				if (item.hasClass('active')) {
+					item.removeClass('active');
+					item.addClass('passive');
+				}
+				if (myImg.hasClass('active')) {
+					myImg.removeClass('active');
+					myImg.addClass('passive');
+				}
+			});
+		});
 	}
 });
+
+
 

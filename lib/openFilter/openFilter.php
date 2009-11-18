@@ -49,6 +49,9 @@ class openFilter extends openWebX {
 		}
 	}
 
+	public static function filterText($strOrig) {
+			
+	}
 
 	public static function filterAction($strAction,$strType,$mixedOrig) {
 		$retVal = false;

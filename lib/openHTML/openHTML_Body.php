@@ -67,6 +67,9 @@ class openHTML_Body extends openWebX implements openObject {
 		foreach ($this->elements as $key => $val) {
 			if (!isset($val->data['isBuilt'])) $myBody->content.=$val->build();
 		}
+		// Is there anything in the outputbuffer yet?
+		$myBody->content.=ob_get_contents();
+		ob_end_clean();
         $retVal = $myBody->build();
 		return $retVal;
 	}

@@ -10,6 +10,12 @@
  * Start the session...
  */
 session_start();
+
+/**
+ * Start the output buffering...
+ */
+ob_start();
+ 
 /**
  * class Settings
  *
