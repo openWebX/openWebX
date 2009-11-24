@@ -140,6 +140,7 @@ interface openImage_Interface {
 	public function imgResize		($iWidth, $iHeight);
 	public function imgScale		($iWidth,$iHeight);	
 	public function imgSepia		($iThreshold);
+	public function imgText2Image	();
 
 }
 ?>
