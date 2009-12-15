@@ -81,7 +81,7 @@ class openLogging extends openWebX implements openObject {
   	}
 
   	private function log2File($strLine) {
-  		$myFS = openWebX::init('openFilesystem');
+  		$myFS = new openFilesystem();
     	$myFile = Settings::get('path_log').date('Y-m-d').'.log';
     	$myFS->fileAppendText("\n".date('d.m.Y H:i:s').': '.$strLine);
     	unset($myFS);

@@ -63,7 +63,7 @@ class openImage_imagick implements openImage_Interface {
 		$this->imgObject->sepiaToneImage($iThreshold);
 	}
 	
-	public function imgText2Image($text,$font,$size) {
+	public function imgText2Image($strText,$strFont,$iSize) {
 		Header("Content-type: image/png"); 
 
 class textPNG { 

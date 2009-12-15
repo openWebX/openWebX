@@ -8,6 +8,7 @@ class openImage extends openWebX implements openObject {
 	private $imgParams	= NULL;
 	private $docObject 	= NULL;
 	
+	
 
 	public function __construct($strQueue = NULL) {
 		$this->registerSlots();
