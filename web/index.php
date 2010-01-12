@@ -5,19 +5,13 @@ require_once('openWebX.php');
 //openDebug::dbgVar($_SESSION);
 
 $myHTML = new openHTML();
-$myUI = new openUI();
 
+$myImg = $myHTML->body->add('img','feed');
+$myImg->src = '/share/images/icons/openFeed/rss.png';
 
-$myTabs = array();
-$myTabs[] = 'personal';
-$myTabs[] = 'contact';
-$myTabs[] = 'blahfasel';
+$myFeeds = $myHTML->body->add('div','feeds');
+$myFeeds->content = $myImg->build();
 
-//$Tabber = $myHTML->body->add('div','tabber');
-//$Tabber->content .= $myUI->uiTabs($myTabs);
-echo $myUI->uiTabs($myTabs);
-
-
-unset($myUI,$myHTML);
+unset($myHTML);
 
 ?>

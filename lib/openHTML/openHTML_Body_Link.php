@@ -67,6 +67,8 @@ class openHTML_Body_Link extends openWebX implements openObject {
 				$myImg->src	= Settings::get('web_icons').$arrType[1];
 				$retVal = $myImg->build();
 				unset($myImg);
+				break;
+			default:
 				break;		
 		}
 		return $retVal;

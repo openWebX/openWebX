@@ -1,79 +1,11 @@
 body {
-	background:#fff url(/share/images/bg.png) bottom right no-repeat;
+	background: #2f2f2f url(/share/images/patterns/1.png) top right no-repeat;
 	height:100%;
 	width:100%;
 }
 
-ul li {
-	float:left;
-	width:70px;
-	height:43px;
-	text-align:center;
-	vertical-align:bottom;
-	list-style-type:none;
-}
-#wrapper {
+div#feeds {
 	position:absolute;
-	z-index:110;
-	top:50%;
-	left:50%;
-	margin-left:-314px;
-	margin-top:-312px;
-	border-bottom:1px solid #000;
+	bottom:0;
+	right:0;
 }
-
-#content {
-
-	height:300px;
-	width:624px;
-}
-#closer {
-	background:#000;
-	height:16px;
-	width:624px;
-}
-
-
-#background {
-	position:absolute;
-	width:720px;
-	height:800px;
-	margin:auto;
-	z-index:1;
-	top:50%;
-	left:50%;
-	margin-left:-360px;
-	margin-top:-400px;
-	background:url(/share/images/pictures/bg.png);
-}
-
-#menu {
-	position:absolute;
-	width:600px;
-	z-index:110;
-	margin:auto;
-	top:50%;
-	left:50%;
-	margin-left:-300px;
-	margin-top:-355px;
-}
-
-#flip {
-	position:absolute;
-	width:600px;
-	height:280px;
-	z-index:100;
-	top:50%;
-	left:50%;
-	margin-top:-300px;
-	margin-left:-305px;
-}
-#messaging {
-	position:absolute;
-	z-index:100;
-	top:50%;
-	left:50%;
-	margin-top:300px;
-	margin-left:-280px;
-}
-
