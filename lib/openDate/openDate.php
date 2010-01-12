@@ -35,12 +35,7 @@
 class openDate extends openWebX {
 
 	public static function dateGetFormatted($strFormat,$mixedTime=NULL) {
-		try {
-			
-			
-		} catch (Exception $e) {
-			
-		}	
+		
 	}
 	
 }

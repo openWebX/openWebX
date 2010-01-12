@@ -151,10 +151,8 @@ if (isset($bg_blu)) $text->bg_blu = $bg_blu; // ..
 if (isset($tr)) $text->transparent = $tr; // transparency flag (boolean). 
 
 $text->draw(); 
-?>	
+
 	}
 	
 }
-
-
 ?>
