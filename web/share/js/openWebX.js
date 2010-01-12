@@ -7,6 +7,8 @@ window.addEvent('domready',function(){
 	
 	myObj.initLoaders();
 	
+	myObj.initActions();
+	
 	// Make PNGs looking better in IE<7
 	myObj.fixPNGs();
 	
@@ -43,6 +45,9 @@ openWebX.implement({
 			}
 		});
 	},
+	initActions: function () {
+		
+	}
     fixPNGs: function() {
     	Browser.scanForPngs('body');
     	$$('img').each(function(item){

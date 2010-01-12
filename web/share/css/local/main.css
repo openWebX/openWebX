@@ -9,3 +9,13 @@ div#feeds {
 	bottom:0;
 	right:0;
 }
+
+#divContent {
+	background: white;
+	border:1px solid #black;
+	width:10px;
+	height:10px;
+	z-index:100;
+	margin:auto;
+	
+}

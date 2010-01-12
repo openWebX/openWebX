@@ -144,15 +144,13 @@ class openHTML_Head extends openWebX implements openObject {
 
 	private function _buildJS() {
 		$requiredJS = array(
-			'mootools/mootools_core',
-			'mootools/mootools_more',
-			'mootools/clientcide'
+			'kernel'
 		);
 		$myFS = new openFilesystem();
-		//$myExts = $myFS->fileGetFilesInDir(Settings::get('path_mootools_ext'),true);
-		//foreach ($myExts as $key=>$val) {
-		//   	$requiredJS[] = 'mootools_ext/'.$val;
-		//}
+		$myExts = $myFS->fileGetFilesInDir(Settings::get('path_javascript_modules'),true);
+		foreach ($myExts as $key=>$val) {
+		   	$requiredJS[] = 'modules/'.$val;
+		}
 		unset($myFS);
 		$requiredJS[] = 'openWebX';
 		foreach ($requiredJS as $key=>$val) {
