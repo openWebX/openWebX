@@ -147,7 +147,7 @@ class openHTML_Head extends openWebX implements openObject {
 			'kernel'
 		);
 		$myFS = new openFilesystem();
-		$myExts = $myFS->fileGetFilesInDir(Settings::get('path_javascript_modules'),true);
+		$myExts = $myFS->fileGetFilesInDir(Settings::get('path_js_modules'),true);
 		foreach ($myExts as $key=>$val) {
 		   	$requiredJS[] = 'modules/'.$val;
 		}
