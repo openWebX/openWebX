@@ -1,13 +1,20 @@
 /*
 $Id: openWebX.js 236 2009-09-10 06:03:14Z jens $
 */
+
+var divArray = new Array();
+
 window.addEvent('domready',function(){
 	Clientcide.setAssetLocation('/share/images/icons/Assets');
 	var myObj = new openWebX();
 	
+	myObj.getDivs();
+	
 	myObj.initLoaders();
 	
 	myObj.initActions();
+	
+	myObj.initFaders();
 	
 	// Make PNGs looking better in IE<7
 	myObj.fixPNGs();
@@ -31,6 +38,22 @@ var openWebX = new Class({});
 
 openWebX.implement({
 //###############################################################################################
+	getDivs: function() {
+		$$('div').each(function(item){
+			var currentElement = divArray.length;
+			var id = item.getProperty('id');
+			var size = item.getSize();
+			var pos = item.getPosition();
+			
+			divArray[currentElement] = new Object();
+			divArray[currentElement]['id'] = id;
+			divArray[currentElement]['width'] = size.x;
+			divArray[currentElement]['height'] = size.y;
+			divArray[currentElement]['x'] = pos.x;
+			divArray[currentElement]['y'] = pos.y;
+		});
+	},
+	
 	initLoaders: function() {
 		$$('div').each(function(item) {
 			var myLoad = false;
@@ -45,9 +68,15 @@ openWebX.implement({
 			}
 		});
 	},
+	initFaders: function() {
+		divArray.each(function(item, index) {
+			alert(item[index]);
+		});
+	},
+	
 	initActions: function () {
 		
-	}
+	},
     fixPNGs: function() {
     	Browser.scanForPngs('body');
     	$$('img').each(function(item){

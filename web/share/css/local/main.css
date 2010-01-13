@@ -12,10 +12,10 @@ div#feeds {
 
 #divContent {
 	background: white;
-	border:1px solid #black;
-	width:10px;
-	height:10px;
+	border:1px solid black;
+	width:600px;
+	height:600px;
 	z-index:100;
 	margin:auto;
-	
+	overflow:auto;
 }
