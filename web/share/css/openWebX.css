@@ -13,15 +13,26 @@
 	div {
 		-webkit-border-radius: 5px;
 		-moz-border-radius: 5px;
-		border-radius: 5px;
+	}
+	.content {
+		overflow:hidden;
+		opacity:0.95;
 	}
 	.fade_top {
-		background: transparent url(/share/images/styles/fade_top.png) repeat-x;
+		background: url(/share/images/styles/fade_top.png) repeat-x;
 		height:22px;
+		-webkit-border-radius-bottomleft: 0px;
+		-webkit-border-radius-bottomright: 0px;
+		-moz-border-radius-bottomleft: 0px;
+		-moz-border-radius-bottomright: 0px;
 	}
 	.fade_bottom {
-		background: transparent url(/share/images/styles/fade_bottom.png) repeat-x;
+		background: url(/share/images/styles/fade_bottom.png) repeat-x;
 		height:22px;
+		-webkit-border-radius-topleft: 0px;
+		-webkit-border-radius-topright: 0px;
+		-moz-border-radius-topleft: 0px;
+		-moz-border-radius-topright: 0px;
 	}
 }
 

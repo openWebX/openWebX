@@ -44,6 +44,8 @@ openWebX.implement({
 			var id = item.getProperty('id');
 			var size = item.getSize();
 			var pos = item.getPosition();
+			var classes = item.getProperty('class');
+
 			
 			divArray[currentElement] = new Object();
 			divArray[currentElement]['id'] = id;
@@ -51,6 +53,8 @@ openWebX.implement({
 			divArray[currentElement]['height'] = size.y;
 			divArray[currentElement]['x'] = pos.x;
 			divArray[currentElement]['y'] = pos.y;
+			divArray[currentElement]['classes'] = classes;
+			divArray[currentElement]['index'] = item.getStyle('z-index');
 		});
 	},
 	
@@ -70,12 +74,58 @@ openWebX.implement({
 	},
 	initFaders: function() {
 		divArray.each(function(item, index) {
-			alert(item[index]);
+			if (item.classes.contains('content')) {
+				var faderIndex = parseInt(item.index) + 1;
+				
+				var faderTop = new Element(
+						'div',
+						{
+							'id': 'faderTop_'+item.id,
+							'class': 'fade_top',
+							'styles': {
+								'z-index': faderIndex,
+								'position': 'absolute',
+								'top': item.y,
+								'left': item.x,
+								'width': item.width
+							}
+						}
+				);
+				var faderBottom = new Element(
+						'div',
+						{
+							'id': 'faderBottom_'+item.id,
+							'class': 'fade_bottom',
+							'styles': {
+								'z-index': faderIndex,
+								'position': 'absolute',
+								'top': parseInt(item.y)+parseInt(item.height)-20,
+								'left': item.x,
+								'width': item.width
+							}
+						}
+				);
+
+				faderTop.inject(item.id);
+				faderBottom.inject(item.id);
+			}
+			console.log(item);
 		});
 	},
 	
 	initActions: function () {
-		
+		divArray.each(function(item, index) {
+			if (item.classes.contains('rotate')) {
+				var fxRotate = new Fx.Rotate(item.id);
+				$(item.id).addEvent('mousedown',function(el){
+					fxRotate.spin(2500);
+					$(item.id).setStyle('-moz-transform','scale (0.5)');
+				});
+				$(item.id).addEvent('mouseup',function(el){
+					fxRotate.set(0);
+				});
+			}
+		});
 	},
     fixPNGs: function() {
     	Browser.scanForPngs('body');
