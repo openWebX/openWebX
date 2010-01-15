@@ -74,9 +74,9 @@ class openDocument extends openWebX {
 		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
 		$retVal				= $this->load();
 		if (!$retVal) {
-			$this->docObject 	= new StdClass();
-			$this->type			= openFilter::filterAction('clean','string',$strType);
-			$this->_attachments = new StdClass();
+			//$this->docObject 	= new StdClass();
+			//$this->type			= openFilter::filterAction('clean','string',$strType);
+			//$this->_attachments = new StdClass();
 		}
 		return $retVal;	
 	}

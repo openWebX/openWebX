@@ -22,16 +22,6 @@
 // # Revision: $Revision: 234 $
 // ########################################################################
 
-
-/**
- * "Document"-structure for couchDB
- * 
- */
-$couchdb_tables = array 	(
-								'open_slots' => '{"hash":null,"slot":null,"object":null,"prio":0}',
-								
-							);
-
 /**
  * SQLs for openDB
  */
@@ -51,6 +41,15 @@ define ('SQL_openDB_dbStructure','
 /**
  * SQLs for openWebX
  */
+ define ('SQL_openWebX_getByID','
+	SELECT 
+		`object_type_id`
+	FROM
+		`open_Object`
+	WHERE
+		`object_id` = :id
+');
+ 
  /**
   * Register slot
   */

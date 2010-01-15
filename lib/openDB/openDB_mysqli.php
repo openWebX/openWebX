@@ -135,6 +135,15 @@ class openDB extends openDB_Abstract {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Public Methods
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	public function dbCreateStructure() {}
+	public function dbGetByID($strID) {
+		$this->dbSetStatement(SQL_openWebX_getByID,array('id'=>$strID));
+		$this->dbFetchObject();
+		print_r($this->dbResultArray);
+	}
+	public function dbGetByType($strType) {}
+	public function dbStore($objContent) {}
+
 	//#########################################################################################################
 	public function dbSetStatement($strSQL,$arrParams=null) {
 	//#########################################################################################################
