@@ -2,7 +2,8 @@
 error_reporting(E_ALL);
 require_once('openWebX.php');
 
-//openDebug::dbgVar($_SESSION);
+openDebug::dbgVar($_SESSION,'Session');
+openDebug::dbgVar($_GET,'GET');
 
 $myHTML = new openHTML();
 

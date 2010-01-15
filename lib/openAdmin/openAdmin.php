@@ -1,6 +1,6 @@
 <?php
 // ########################################################################
-// # File: $Id: openDebug.php 217 2009-08-14 13:56:19Z jens $
+// # File: $Id$
 // ########################################################################
 // # This program is free software; you can redistribute it and/or modify
 // # it under the terms of the GNU General Public License V3
@@ -17,27 +17,44 @@
 // # GNU General Public License for more details.
 // #
 // ########################################################################
-// # Autor: $Author: jens $
+// # Autor: $Author$
 // ########################################################################
-// # Revision: $Revision: 217 $
+// # Revision: $Revision$
 // ########################################################################
 /**
-* openDebug
+* openAdmin
 *
 * Part of the openWebX-API
 * This class is stable
 * @author Jens Reinemuth <jens@openos.de>
-* @version $Id: openDebug.php 217 2009-08-14 13:56:19Z jens $
+* @version $Id$
 * @package openWebX
-* @subpackage openDebug
+* @subpackage openAdmin
 * @uses openWebX
 */
-class openDebug extends openWebX {
-
-  	public static function dbgVar($mixedVar,$strName=NULL) {
-  		if ($strName) echo '<h2>'.$strName.'</h2>';
-  		echo '<pre>'.print_r($mixedVar,true).'</pre>';    
-  	}
-  	
+class openAdmin extends openWebX implements openObject {
+	
+	public function __construct() {
+		$this->registerSlots();	
+	}
+	
+	public function handleSignal($strSignalName,$mixedParams) {
+      switch(strtolower($strSignalName)) {
+        case 'admin':
+			$this->adminMainpage();
+            break;
+      }
+    }
+	
+	private function registerSlots() {
+		openWebX::registerSlot($this,'admin',0);
+	}
+	
+	private function adminMainpage() {
+		
+		echo 'im Admin-Bereich!';
+	
+	}
+			
 }
 ?>

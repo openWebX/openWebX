@@ -17,6 +17,7 @@
 	.content {
 		overflow:hidden;
 		opacity:0.95;
+		-moz-transform: scale(0.1);
 	}
 	.fade_top {
 		background: url(/share/images/styles/fade_top.png) repeat-x;

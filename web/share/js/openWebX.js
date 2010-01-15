@@ -117,12 +117,14 @@ openWebX.implement({
 		divArray.each(function(item, index) {
 			if (item.classes.contains('rotate')) {
 				var fxRotate = new Fx.Rotate(item.id);
-				$(item.id).addEvent('mousedown',function(el){
-					fxRotate.spin(2500);
-					$(item.id).setStyle('-moz-transform','scale (0.5)');
+				$(item.id).addEvent('mouseenter',function(el){
+					
+					resizeTo(item.id,0.5,1);
+					//fxRotate.spin(2500);
 				});
-				$(item.id).addEvent('mouseup',function(el){
-					fxRotate.set(0);
+				$(item.id).addEvent('mouseleave',function(el){
+					//fxRotate.set(0);
+					resizeTo(item.id,0.5,1);
 				});
 			}
 		});
@@ -174,4 +176,16 @@ openWebX.implement({
 });
 
 
+/**
+ * Helpers
+ */
+
+function scale(itemID, size) {
+	$(itemID).style.MozTransform = "scale(" + size + ")";
+	$(itemID).style.WebkitTransform = "scale(" + size + ")";
+}
+function resizeTo(itemID, startSize, targetSize) {
+	var myFx = new Fx.Tween($(itemID));
+	myFx.start('MozTransform','size('+startSize+')','size('+targetSize+')');
+}
 
