@@ -58,8 +58,18 @@ class openDocument extends openWebX {
 	 * @access private
 	 */
 	private $docAttachments	= array();
-	
-	
+	/**
+	 * document saving query
+	 * 
+	 * @access private
+	 */
+	private $docSave = '';
+	/**
+	 * document loading query
+	 * 
+	 * @access private
+	 */
+	 private $docLoad = '';
 	
 	/**
 	 * loads the given document (id and type) from database or initializes a new one.
@@ -74,8 +84,8 @@ class openDocument extends openWebX {
 		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
 		$retVal				= $this->load();
 		if (!$retVal) {
-			//$this->docObject 	= new StdClass();
-			//$this->type			= openFilter::filterAction('clean','string',$strType);
+			$this->docObject 	= new StdClass();
+			
 			//$this->_attachments = new StdClass();
 		}
 		return $retVal;	
@@ -110,7 +120,7 @@ class openDocument extends openWebX {
 	 */
 	public function save() {
 		$this->map();
-		return $this->dbObject->dbStore($this->docObject);
+		//return $this->dbObject->dbStore($this->docObject);
 	}
 	
 	/**
@@ -120,7 +130,8 @@ class openDocument extends openWebX {
 	 * @return boolean success? 
 	 */
 	public function load() {
-		return ($this->docObject = $this->dbObject->dbGetByID($this->data['_id'])) ? true : false;
+		return false;
+		//return ($this->docObject = $this->dbObject->dbGetByID($this->data['_id'])) ? true : false;
 	}
 	
 	public function addAttachment($strName,$mixedContent,$strType='application/octet-stream') {

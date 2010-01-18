@@ -110,7 +110,7 @@ class openFilter extends openWebX {
 		} catch (Exception $e) {
 			$e->errHandling();
 		}
-		return ($retVal);
+		return $retVal;
 	}
 }
 ?>

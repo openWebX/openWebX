@@ -168,23 +168,25 @@ class openWebX {
 
   	final public function registerSlot($objRegistrar,$strSlotName,$iPriority=0) {
   		$myHash 		= md5(get_class($objRegistrar).$strSlotName);
-  		$slot 			= new openDocument($myHash,'slot');
-  		if (!$slot) {
-	  		$slot->_id 		=  $myHash;
-	  		$slot->type		= 'slot';
-	  		$slot->object	= get_class($objRegistrar);
-	  		$slot->slot		= $strSlotName;
-	  		$slot->priority	= $iPriority;
-	  		$slot->save();
-  		}
-  		unset($slot);
+  		$myDB 			= new openDB();
+  		$arrParams 		= array(
+  			'hash' 			=> $myHash,
+  			'slot' 			=> $strSlotName,
+  			'object'		=> get_class($objRegistrar),
+  			'prio'			=> intval($iPriority),
+  			'prio_update'	=> intval($iPriority)	
+  		);
+  		$myDB->dbSetStatement(SQL_openWebX_registerSlot,$arrParams);
+  		$myDB->dbExecute();
+  		unset($myDB);
   	}
 
   	final static function sendSignal($strSignalName,$mixedParams) {
-  	  	$strSignalName 	= openFilter::filterAction('clean','string',$strSignalName);
+  	  	//$strSignalName 	= openFilter::filterAction('clean','string',$strSignalName);
       	$myArr 			= self::getSlots($strSignalName);
+      	openDebug::dbgVar($myArr);
       	foreach ($myArr as $key=>$val) {
-        	$myObj = self::init($val->object);
+        	$myObj = self::init($val['object']);
         	$myObj->handleSignal($strSignalName,$mixedParams);
       	}
   	}
@@ -193,7 +195,7 @@ class openWebX {
   		$retVal = null;
   		$myDB 	= new openDB();
   		$resObj = $myDB->dbGetByType('slot');
-  		foreach($resObj->rows as $row) {
+  		foreach($resObj as $row) {
   			$retVal[] = $row->value;
   		}
   		return $retVal;
@@ -201,12 +203,14 @@ class openWebX {
 
     final static function getSlots($strSlotName) {
       	$retVal 		= null;
-      	$strSlotName 	= openFilter::filterAction('clean','string',$strSlotName);
+      	//$strSlotName 	= openFilter::filterAction('clean','string',$strSlotName);
       	$myDB 			= new openDB();
-  		$resObj 		= $myDB->dbGetByField('slot','slot',$strSlotName);
-  		foreach($resObj->rows as $row) {
-  			$retVal[] = $row->value;
-  		}
+  		$arrParams		= array(
+  			'slot'		=> $strSlotName
+  		);
+  		$myDB->dbSetStatement(SQL_openWebX_getSlots,$arrParams);
+  		$myDB->dbFetchArray();
+  		$retVal = $myDB->dbResultArray;
       	return $retVal;
     }
 
