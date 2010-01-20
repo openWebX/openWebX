@@ -41,12 +41,12 @@ class openList extends openWebX implements openObject {
 	public function __construct($strTitle) {
 		$this->registerSlots();
 		$this->listID	 = md5($strTitle);
-		$this->docObject = new openDocument($this->listID,'list');	
+		//$this->docObject = new openDocument($this->listID,'list');	
 	}
 	
 	public function __destruct() {
-		$this->docObject->save();
-		unset ($this->docObject);	
+		//$this->docObject->save();
+		//unset ($this->docObject);	
 	}
 	
 	public function listAddItem($strTitle) {
@@ -82,8 +82,8 @@ class openListItem extends openWebX implements openObject {
 	}
 	
 	public function __destruct() {
-		$this->docObject->save();
-		unset ($this->docObject);	
+		//$this->docObject->save();
+		//unset ($this->docObject);	
 	}
 	
 }

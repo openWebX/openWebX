@@ -27,7 +27,8 @@ class openException extends Exception {
     }
 
     public function errHandling() {
-        openWebX::sendSignal('log','<br/>---<br/>&nbsp;&nbsp;&nbsp;&nbsp;'.strip_tags($this->errMessage));
+        //openWebX::sendSignal('log','<br/>---<br/>&nbsp;&nbsp;&nbsp;&nbsp;'.strip_tags($this->errMessage));
+        echo '<br/>---<br/>&nbsp;&nbsp;&nbsp;&nbsp;'.strip_tags($this->errMessage);
     }
 
 }?>

@@ -50,6 +50,7 @@ class openSystem extends openWebX implements openObject {
     foreach ($arrObj as $val) {
       $val=str_replace($dirLib,'',$val);
       $arrTmp=explode('/',$val);
+      openDebug::dbgVar($val,'Caching Object');
       if (isset($arrTmp[1]) && $arrTmp[0].'.php'==$arrTmp[1]) {
         $ret = openWebX::init($arrTmp[0]);
         unset ($ret);

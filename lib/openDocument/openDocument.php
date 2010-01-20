@@ -79,16 +79,16 @@ class openDocument extends openWebX {
 	 * @param string $strType - type of document
 	 * @return void
 	 */
-	public function __construct($strID,$strType) {
+	public function __construct() {
 		$this->dbObject 	= new openDB();
-		$this->_id			= md5(openFilter::filterAction('clean','string',$strID));
-		$retVal				= $this->load();
+		/*$retVal				= $this->load();
 		if (!$retVal) {
 			$this->docObject 	= new StdClass();
 			
 			//$this->_attachments = new StdClass();
 		}
-		return $retVal;	
+		return $retVal;
+		*/	
 	}
 	
 	/**

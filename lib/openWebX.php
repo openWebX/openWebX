@@ -67,6 +67,7 @@ function __autoload($strLibName) {
     	$strLibFolder	= $strLibName;
     }
     if ($strLibName!='openWebX') {
+    	echo 'Trying to load '.$strLibFolder.'/'.$strLibName;
         $loadLib = Settings::get('path_lib').$strLibFolder.'/'.$strLibName.'.php';
         require_once($loadLib);
     }
@@ -90,7 +91,7 @@ openRequest::parse();
  */
 // Fill the object-cache
 //if (is_null(openSystem::sysGetValue('object_cache'))) {
-//    openSystem::sysObjectCache();
+    openSystem::sysObjectCache();
 //}
 
 
@@ -198,12 +199,13 @@ class openWebX {
   		foreach($resObj as $row) {
   			$retVal[] = $row->value;
   		}
+  		unset($myDB);
   		return $retVal;
 	}
 
     final static function getSlots($strSlotName) {
       	$retVal 		= null;
-      	//$strSlotName 	= openFilter::filterAction('clean','string',$strSlotName);
+      	$strSlotName 	= openFilter::filterAction('clean','string',$strSlotName);
       	$myDB 			= new openDB();
   		$arrParams		= array(
   			'slot'		=> $strSlotName
@@ -211,6 +213,7 @@ class openWebX {
   		$myDB->dbSetStatement(SQL_openWebX_getSlots,$arrParams);
   		$myDB->dbFetchArray();
   		$retVal = $myDB->dbResultArray;
+  		unset($myDB);
       	return $retVal;
     }
 
