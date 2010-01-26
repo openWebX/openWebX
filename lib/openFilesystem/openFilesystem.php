@@ -105,6 +105,27 @@ class openFilesystem extends openWebX implements openObject {
 		}
 		return ($dirlist);
 	}
+	
+	public function fileProfileDir( $dir ) {
+  		static $info = array();
+  		if( is_dir( $dir = rtrim( $dir, "/\\" ) ) ) {
+    		foreach( scandir( $dir) as $item ) {
+      			if( $item != "." && $item != ".." ) {
+        			$info['all'][] = $absPath = $dir . DIRECTORY_SEPARATOR . $item;
+        			$stat = stat( $absPath );
+        			switch( $stat['mode'] & 0170000 ) {
+        				case 0010000: $info['files'][]       = $absPath; break;
+				        case 0040000: $info['directories'][] = $absPath; $this->fileProfileDir( $absPath ); break;
+				        case 0120000: $info['links'][]       = $absPath; break;
+				        case 0140000: $info['sockets'][]     = $absPath; break;
+				        case 0010000: $info['pipes'][]       = $absPath; break;
+        			}
+      			}
+    		}
+  		}
+  		clearstatcache();       
+  		return $info;
+	}
 
 	public function fileAppendText($strFilename,$strText) {
 		$this->fileOpen($strFilename,'a+');

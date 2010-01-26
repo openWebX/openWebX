@@ -67,7 +67,7 @@ function __autoload($strLibName) {
     	$strLibFolder	= $strLibName;
     }
     if ($strLibName!='openWebX') {
-    	echo 'Trying to load '.$strLibFolder.'/'.$strLibName;
+    	//echo 'Trying to load '.$strLibFolder.'/'.$strLibName;
         $loadLib = Settings::get('path_lib').$strLibFolder.'/'.$strLibName.'.php';
         require_once($loadLib);
     }
@@ -91,7 +91,7 @@ openRequest::parse();
  */
 // Fill the object-cache
 //if (is_null(openSystem::sysGetValue('object_cache'))) {
-    openSystem::sysObjectCache();
+//    openSystem::sysObjectCache();
 //}
 
 
@@ -107,7 +107,7 @@ class openWebX {
         try {
 	        if (!$myClass = openSystem::sysGetValue($strObject)) {
 	            $myClass = new $strObject($mixedParams);
-	        	  openSystem::sysSetValue($strObject,$myClass);
+	        	openSystem::sysSetValue($strObject,$myClass);
 	        }
         	return($myClass);
         } catch (Exception $e) {

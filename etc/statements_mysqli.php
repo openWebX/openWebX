@@ -103,16 +103,47 @@ define ('SQL_openSystem_storeValue','
     )
 ');
 /**
+ * open_List
+ */
+define ('SQL_openList_addList','
+	INSERT INTO
+		`open_Object_List`
+	SET
+		`title`		= :title,
+		`hash`		= :hash,
+		`type`		= :type,
+		`folder`	= :folder,
+		`elements` 	= :elements
+	ON DUPLICATE KEY UPDATE
+		`title`		= :title,
+		`hash`		= :hash,
+		`type`		= :type,
+		`folder`	= :folder,
+		`elements` 	= :elements;
+');
+define ('SQL_openList_getList_ByHash','
+	SELECT
+		`open_Object_List`.`id`,
+		`open_Object_List`.`title`,
+		`open_Object_List`.`hash`,
+		`open_Object_List`.`type`,
+		`open_Object_List`.`folder`,
+		`open_Object_List`.`elements`
+	FROM
+		`open_Object_List`
+	WHERE
+		`open_Object_List`.`hash` = :hash
+');
+
+/**
  * open_Microblog
  */
 define ('SQL_openMicroblog_storeEntry','
 	INSERT INTO
     	`open_Object_Microblog`
     SET
-        `created`   = :created,
 		`hash`		= :hash,
         `type`		= :type,
-		`author`    = :author,
         `content`   = :content,
 		`read`		= 0
 	ON DUPLICATE KEY UPDATE `read` = 1;

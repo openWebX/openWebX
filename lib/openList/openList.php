@@ -34,19 +34,28 @@
 */
 class openList extends openWebX implements openObject {
 
-	private $docObject 	= NULL;
+	private $dbObject 	= NULL;
 	private $listItems 	= array();
-	private $listID		= '';
+	private $listVars	= array();
 	
-	public function __construct($strTitle) {
+	public function __construct($arrSettings=NULL) {
 		$this->registerSlots();
-		$this->listID	 = md5($strTitle);
+		$this->listVars['title']	 			= $arrSettings['title'];
+		(!$arrSettings['hash']) ? $this->listVars['hash']	= md5($arrSettings['title']) : $this->listVars['hash'] = $arrSettings['hash'];
+		
+		$this->dbObject = new openDB();	
+		$this->dbObject->dbPrepareStatement(SQL_openList_getList_ByHash,array('hash',$this->listVars['hash']));
+		$arrList = $this->dbObject->dbFetchArray();
+		if (!isset($arrList[0])) {
+			$this->listVars['	
+		}
+		
 		//$this->docObject = new openDocument($this->listID,'list');	
 	}
 	
 	public function __destruct() {
 		//$this->docObject->save();
-		//unset ($this->docObject);	
+		unset ($this->dbObject);	
 	}
 	
 	public function listAddItem($strTitle) {
@@ -55,7 +64,7 @@ class openList extends openWebX implements openObject {
 	
 	public function handleSignal($strSignalName, $mixedParams) {
       	switch(strtolower($strSignalName)) {
-        	case 'slot':
+        	case 'list':
 				$this->listProcess($mixedParams);
             	break;
       	}
@@ -66,7 +75,9 @@ class openList extends openWebX implements openObject {
 	}
 	
 	private function registerSlots() {
-		openWebX::registerSlot($this,'list',0);	
+		openWebX::registerSlot($this,'list',0);
+		openWebX::registerSlot($this,'gallery',0);
+		openWebX::registerSlot($this,'folder',0);	
 	}
 	
 }
@@ -76,9 +87,9 @@ class openListItem extends openWebX implements openObject {
 	private $docObject = NULL;
 	
 	public function __construct($intPos, $idList, $strTitle) {
-		$this->docObject = new openDocument(md5($strTitle),'list_item');
-		$this->docObject->listid 	= $idList;
-		$this->docObject->position 	= $intPos;
+		//$this->docObject = new openDocument(md5($strTitle),'list_item');
+		//$this->docObject->listid 	= $idList;
+		//$this->docObject->position 	= $intPos;
 	}
 	
 	public function __destruct() {

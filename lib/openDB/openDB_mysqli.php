@@ -151,15 +151,12 @@ class openDB extends openDB_Abstract {
 	public function dbSetStatement($strSQL,$arrParams=null) {
 	//#########################################################################################################
   		try {
-  			openDebug::dbgVar($strSQL,'SQL');
-  			openDebug::dbgVar($arrParams,'Params');
-    		$this->dbStatement = $this->dbObject->prepare($strSQL);
+  			$this->dbStatement = $this->dbObject->prepare($strSQL);
     		if ($arrParams && is_array($arrParams)) {
     			foreach ($arrParams as $key=>$val) {
     		    	$this->dbStatement->bindValue($key,openFilter::filterAction('sanitize','string',$val));
     			}
     		}
-    		openDebug::dbgVar($this->Statement);
     		return true;
   		} catch (PDOException $e) {
   			echo $e->getMessage();
