@@ -35,31 +35,71 @@
 class openList extends openWebX implements openObject {
 
 	private $dbObject 	= NULL;
-	private $listItems 	= array();
-	private $listVars	= array();
+	private $fileObject	= NULL;
 	
-	public function __construct($arrSettings=NULL) {
+	public function __construct() {
 		$this->registerSlots();
-		$this->listVars['title']	 			= $arrSettings['title'];
-		(!$arrSettings['hash']) ? $this->listVars['hash']	= md5($arrSettings['title']) : $this->listVars['hash'] = $arrSettings['hash'];
-		
-		$this->dbObject = new openDB();	
-		$this->dbObject->dbPrepareStatement(SQL_openList_getList_ByHash,array('hash',$this->listVars['hash']));
-		$arrList = $this->dbObject->dbFetchArray();
-		if (!isset($arrList[0])) {
-			$this->listVars['	
-		}
-		
-		//$this->docObject = new openDocument($this->listID,'list');	
+		$this->dbObject = new openDB();
 	}
 	
 	public function __destruct() {
-		//$this->docObject->save();
 		unset ($this->dbObject);	
 	}
 	
-	public function listAddItem($strTitle) {
-		$this->listItems[] = new openListItem(count($this->listItems), $this->listID, $strTitle);	
+	public function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
+		$arrParams = array(
+			'title' => openFilter::filterAction('clean','string',$strTitle),
+			'hash' => md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' => openFilter::filterAction('clean','string',$strType),
+			'folder' => openFilter::filterAction('clean','string',$strFolder),
+			'elements' => intval($strElements),
+		);
+		$this->dbObject->dbSetStatement(SQL_openList_addList,$arrParams);
+		$this->dbObject->dbExecute();
+	}
+	
+	public function listAddItem($strTitle,$strType,$strFolder,$strFile) {
+		$arrParams = array(
+			'title' => openFilter::filterAction('clean','string',$strTitle),
+			'hash' => md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' => openFilter::filterAction('clean','string',$strType),
+			'folder' => openFilter::filterAction('clean','string',$strFolder),
+			'file' => openFilter::filterAction('clean','string',$strFile),
+		);
+		$this->dbObject->dbSetStatement(SQL_openList_addListItem,$arrParams);
+		$this->dbObject->dbExecute();
+		
+		
+	}
+	
+	public function listBuildFromDirectory($strDirectory,$strType,$strItemType) {
+		if (file_exists($strDirectory)) {
+			$this->fileObject = new openFilesystem();
+			$dirContents = $this->fileObject->fileProfileDir($strDirectory);
+			unset($this->fileObject);
+
+			foreach($dirContents['directories'] as $key=>$val) {
+				$arrTmp = explode('/',$val);
+				if (substr($arrTmp[count($arrTmp)-1],0,1)!='.') {
+					$this->listAdd($arrTmp[count($arrTmp)-1],$strType,$val,0);	
+				}
+			}
+			
+			$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic");
+			if (!$finfo) {
+    echo "Opening fileinfo database failed";
+    exit();
+}
+			foreach($dirContents['files'] as $key=>$val) {
+				$mimetype 	= $finfo->file($val);
+				$directory	= dirname($val);
+				$file		= basename($val);
+				
+				echo $directory.' -> '.$file.' -> '.$mimetype.'<br/>';	
+			}
+			$finfo->close();
+
+		}
 	}
 	
 	public function handleSignal($strSignalName, $mixedParams) {

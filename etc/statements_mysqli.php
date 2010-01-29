@@ -121,6 +121,27 @@ define ('SQL_openList_addList','
 		`folder`	= :folder,
 		`elements` 	= :elements;
 ');
+
+
+define ('SQL_openList_addListItem','
+	INSERT INTO
+		`open_Object_List_Item`
+	SET
+		`title`		= :title,
+		`hash`		= :hash,
+		`type`		= :type,
+		`folder`	= :folder,
+		`file` 		= :file
+	ON DUPLICATE KEY UPDATE
+		`title`		= :title,
+		`hash`		= :hash,
+		`type`		= :type,
+		`folder`	= :folder,
+		`file` 		= :file;
+');
+
+
+
 define ('SQL_openList_getList_ByHash','
 	SELECT
 		`open_Object_List`.`id`,
@@ -133,6 +154,20 @@ define ('SQL_openList_getList_ByHash','
 		`open_Object_List`
 	WHERE
 		`open_Object_List`.`hash` = :hash
+');
+
+define ('SQL_openList_getList_ByFolder','
+	SELECT
+		`open_Object_List`.`id`,
+		`open_Object_List`.`title`,
+		`open_Object_List`.`hash`,
+		`open_Object_List`.`type`,
+		`open_Object_List`.`folder`,
+		`open_Object_List`.`elements`
+	FROM
+		`open_Object_List`
+	WHERE
+		`open_Object_List`.`folder` LIKE ":folder%"
 ');
 
 /**
