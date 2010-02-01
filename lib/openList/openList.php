@@ -46,7 +46,10 @@ class openList extends openWebX implements openObject {
 	public function __destruct() {	
 	}
 	
-	public function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
+	
+	
+	
+	private function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
 		$this->listArray[] = array(
 			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
 			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
@@ -54,20 +57,15 @@ class openList extends openWebX implements openObject {
 			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
 			'elements' 	=> intval($strElements),
 		);
-		/*
-		$arrParams = array(
-			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
-			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
-			'type' 		=> openFilter::filterAction('clean','string',$strType),
-			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
-			'elements' 	=> intval($strElements),
-		);
-		$this->dbObject->dbSetStatement(SQL_openList_addList,$arrParams);
-		$this->dbObject->dbExecute();
-		*/
 	}
 	
-	public function listAddItem($strTitle,$strType,$strFolder,$strFile) {
+	private function listStore() {
+		$this->dbObject = new openDB();
+		$this->dbObject->dbBulkInsert(SQL_openList_addList,$this->listArray);
+		unset($this->dbObject);	
+	}
+	
+	private function listAddItem($strTitle,$strType,$strFolder,$strFile) {
 		$this->listItemArray[] = array(
 			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
 			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
@@ -75,17 +73,13 @@ class openList extends openWebX implements openObject {
 			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
 			'file' 		=> openFilter::filterAction('clean','string',$strFile),
 		);
-		/*
-		$arrParams = array(
-			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
-			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
-			'type' 		=> openFilter::filterAction('clean','string',$strType),
-			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
-			'file' 		=> openFilter::filterAction('clean','string',$strFile),
-		);
-		$this->dbObject->dbSetStatement(SQL_openList_addListItem,$arrParams);
-		$this->dbObject->dbExecute();
-		*/		
+	}
+
+	private function listStoreItems() {
+		$this->dbObject = new openDB();
+		$this->dbObject->dbBulkInsert(SQL_openList_addListItem,$this->listItemArray);
+		unset($this->dbObject);	
+			
 	}
 	
 	public function listBuildFromDirectory($strDirectory,$strType,$strItemType) {
@@ -112,13 +106,17 @@ class openList extends openWebX implements openObject {
 			}
 			unset($this->fileObject);
 
-			// ...and finally add the directories
+			// ...then add the directories...
 			foreach($dirContents['directories'] as $key=>$val) {
 				$arrTmp = explode('/',$val);
 				if (substr($arrTmp[count($arrTmp)-1],0,1)!='.') {
 					$this->listAdd($arrTmp[count($arrTmp)-1],$strType,$val,(isset($itemCount[$val]) ? $itemCount[$val] : 0));	
 				}
 			}
+			
+			// ... and finally put the data to the database!
+			$this->listStore();
+			$this->listStoreItems();
 		}
 	}
 	
@@ -142,21 +140,5 @@ class openList extends openWebX implements openObject {
 	
 }
 
-class openListItem extends openWebX implements openObject {
-	
-	private $docObject = NULL;
-	
-	public function __construct($intPos, $idList, $strTitle) {
-		//$this->docObject = new openDocument(md5($strTitle),'list_item');
-		//$this->docObject->listid 	= $idList;
-		//$this->docObject->position 	= $intPos;
-	}
-	
-	public function __destruct() {
-		//$this->docObject->save();
-		//unset ($this->docObject);	
-	}
-	
-}
 
 ?>

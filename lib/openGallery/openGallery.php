@@ -37,10 +37,11 @@ class openGallery extends openWebX implements openObject {
 	private $fileObject = null;
 	private $listObject = null;
 	
+	
 	public function galleryBuildFromDirectory($strDirectory) {
 		$this->listObject = new openList();
 		
-		$this->listObject->listBuildFromDirectory($strDirectory,'gallery','image');
+		$this->listObject->listBuildFromDirectory($strDirectory,'gallery','images');
 		
 		unset($this->listObject);
 	}	

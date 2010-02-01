@@ -42,6 +42,12 @@ class openDB extends openDB_Abstract {
 	 * overloaded 
 	 * @var unknown_type
 	 */
+	/**
+	 * overloaded data property
+	 * 
+	 * @access public
+	 * @var array 
+	 */
 	public $data 			= array();
     public $dbResultArray 	= array();
     public $dbResultObject	= null;
@@ -165,6 +171,25 @@ class openDB extends openDB_Abstract {
         	$e->errHandling();
         	return false;
       	}
+	}
+	
+	public function dbBulkInsert($strSQL,$arrValues) {
+		try {
+			$this->dbStatement = $this->dbObject->prepare($strSQL);
+			foreach ($arrValues as $vals) {
+				foreach ($vals as $key=>$val) {
+					$this->dbStatement->bindValue($key,openFilter::filterAction('sanitize','string',$val));
+				}
+				$this->dbStatement->execute();	
+			}
+			
+		} catch (PDOException $e) {
+  			echo $e->getMessage();
+  			return false;
+  		} catch (Exception $e) {
+        	$e->errHandling();
+        	return false;
+      	}	
 	}
 	
 	/**
