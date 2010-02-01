@@ -140,7 +140,19 @@ define ('SQL_openList_addListItem','
 		`file` 		= :file;
 ');
 
-
+define ('SQL_openList_getList_ByType','
+	SELECT
+		`open_Object_List`.`id`,
+		`open_Object_List`.`title`,
+		`open_Object_List`.`hash`,
+		`open_Object_List`.`type`,
+		`open_Object_List`.`folder`,
+		`open_Object_List`.`elements`
+	FROM
+		`open_Object_List`
+	WHERE
+		`open_Object_List`.`type` = :type
+');
 
 define ('SQL_openList_getList_ByHash','
 	SELECT

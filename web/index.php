@@ -1,11 +1,17 @@
 <?php
+$timer = time();
+
 error_reporting(E_ALL);
 require_once('openWebX.php');
 require_once('request.php');
 
-$myGallery = new openGallery();
+$myGal = new openGallery();
 
-$myGallery->galleryBuildFromDirectory('/share/images/');
+$myGal->galleryGetAll();
 
-unset($myGallery);
+openDebug::dbgVar($myGal->galleryArray);
+
+unset($myGal);
+
+echo '<br/>Laufzeit: '.(time()-$timer).' secs';
 ?>

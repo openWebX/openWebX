@@ -36,8 +36,8 @@ class openList extends openWebX implements openObject {
 
 	private $dbObject 			= NULL;
 	private $fileObject			= NULL;
-	private $listArray			= array();
-	private $listItemArray		= array();
+	public $listArray			= array();
+	public $listItemArray		= array();
 	
 	public function __construct() {
 		$this->registerSlots();
@@ -47,6 +47,22 @@ class openList extends openWebX implements openObject {
 	}
 	
 	
+	public function handleSignal($strSignalName, $mixedParams) {
+      	switch(strtolower($strSignalName)) {
+        	case 'list':
+				$this->listProcess($mixedParams);
+            	break;
+      	}
+    }
+	
+	
+	public function listGetListsByType($strType) {
+		$this->dbObject = new openDB();
+		$this->dbObject->dbSetStatement(SQL_openList_getList_ByType,array('type'=>$strType));
+		$this->dbObject->dbFetchArray();
+		$this->listArray = $this->dbObject->dbResultArray;
+		unset($this->dbObject);
+	}
 	
 	
 	private function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
@@ -120,13 +136,6 @@ class openList extends openWebX implements openObject {
 		}
 	}
 	
-	public function handleSignal($strSignalName, $mixedParams) {
-      	switch(strtolower($strSignalName)) {
-        	case 'list':
-				$this->listProcess($mixedParams);
-            	break;
-      	}
-    }
 	
 	private function listProcess($arrParams) {
 			
@@ -134,7 +143,6 @@ class openList extends openWebX implements openObject {
 	
 	private function registerSlots() {
 		openWebX::registerSlot($this,'list',0);
-		openWebX::registerSlot($this,'gallery',0);
 		openWebX::registerSlot($this,'folder',0);	
 	}
 	

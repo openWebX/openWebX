@@ -10,7 +10,7 @@ if (isset($_GET['request'])) {
 	foreach($myRequest as $key=>$val) {
 		if ($slots = openWebX::getSlots($val)) {
 			foreach ($slots as $slot_key=>$slot_val) {
-				$actHandler = $slots[$slot_key]->object;
+				$actHandler = $slots[$slot_key]['object'];
 				$arrHandlers[$actHandler]['slot'] = $val;
 			}
 		} else {

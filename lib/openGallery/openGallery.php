@@ -37,14 +37,44 @@ class openGallery extends openWebX implements openObject {
 	private $fileObject = null;
 	private $listObject = null;
 	
+	public $galleryArray 		= array();
+	public $galleryItemArray	= array();
+	
+	public function __construct() {
+		$this->registerSlots();
+	}
+	
+	public function __destruct() {	
+	}
+	
+	public function galleryGetAll() {
+		$this->listObject = new openList();	
+		$this->listObject->listGetListsByType('gallery');
+		$this->galleryArray = $this->listObject->listArray;
+		unset($this->listObject);
+	}
 	
 	public function galleryBuildFromDirectory($strDirectory) {
 		$this->listObject = new openList();
-		
 		$this->listObject->listBuildFromDirectory($strDirectory,'gallery','images');
-		
 		unset($this->listObject);
 	}	
+	
+	private function registerSlots() {
+		openWebX::registerSlot($this,'gallery',0);	
+	}
+	
+	public function handleSignal($strSignalName, $mixedParams) {
+      	switch(strtolower($strSignalName)) {
+        	case 'gallery':
+				$this->galleryProcess($mixedParams);
+            	break;
+      	}
+    }
+	
+	private function galleryProcess($arrParams) {
+		
+	}
 }
 
 
