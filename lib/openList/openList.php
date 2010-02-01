@@ -34,71 +34,91 @@
 */
 class openList extends openWebX implements openObject {
 
-	private $dbObject 	= NULL;
-	private $fileObject	= NULL;
+	private $dbObject 			= NULL;
+	private $fileObject			= NULL;
+	private $listArray			= array();
+	private $listItemArray		= array();
 	
 	public function __construct() {
 		$this->registerSlots();
-		$this->dbObject = new openDB();
 	}
 	
-	public function __destruct() {
-		unset ($this->dbObject);	
+	public function __destruct() {	
 	}
 	
 	public function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
+		$this->listArray[] = array(
+			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' 		=> openFilter::filterAction('clean','string',$strType),
+			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
+			'elements' 	=> intval($strElements),
+		);
+		/*
 		$arrParams = array(
-			'title' => openFilter::filterAction('clean','string',$strTitle),
-			'hash' => md5(openFilter::filterAction('clean','string',$strTitle)),
-			'type' => openFilter::filterAction('clean','string',$strType),
-			'folder' => openFilter::filterAction('clean','string',$strFolder),
-			'elements' => intval($strElements),
+			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' 		=> openFilter::filterAction('clean','string',$strType),
+			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
+			'elements' 	=> intval($strElements),
 		);
 		$this->dbObject->dbSetStatement(SQL_openList_addList,$arrParams);
 		$this->dbObject->dbExecute();
+		*/
 	}
 	
 	public function listAddItem($strTitle,$strType,$strFolder,$strFile) {
+		$this->listItemArray[] = array(
+			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' 		=> openFilter::filterAction('clean','string',$strType),
+			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
+			'file' 		=> openFilter::filterAction('clean','string',$strFile),
+		);
+		/*
 		$arrParams = array(
-			'title' => openFilter::filterAction('clean','string',$strTitle),
-			'hash' => md5(openFilter::filterAction('clean','string',$strTitle)),
-			'type' => openFilter::filterAction('clean','string',$strType),
-			'folder' => openFilter::filterAction('clean','string',$strFolder),
-			'file' => openFilter::filterAction('clean','string',$strFile),
+			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'type' 		=> openFilter::filterAction('clean','string',$strType),
+			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
+			'file' 		=> openFilter::filterAction('clean','string',$strFile),
 		);
 		$this->dbObject->dbSetStatement(SQL_openList_addListItem,$arrParams);
 		$this->dbObject->dbExecute();
-		
-		
+		*/		
 	}
 	
 	public function listBuildFromDirectory($strDirectory,$strType,$strItemType) {
 		if (file_exists($strDirectory)) {
+			
+			$itemCount = array();
+			
+			// First profile the directory...
 			$this->fileObject = new openFilesystem();
 			$dirContents = $this->fileObject->fileProfileDir($strDirectory);
+			
+			
+			// ...then scan the results for usable files...
+			$allowedExts = Settings::get('file_types_'.$strItemType);		
+			foreach($dirContents['files'] as $key=>$val) {
+				$directory	= dirname($val);
+				$file		= basename($val);
+				$extension	= $this->fileObject->fileGetFileExtension($val);
+				$arrTmp = explode('/',$directory);
+				if (substr($arrTmp[count($arrTmp)-1],0,1)!='.' && substr($file,0,1)!='.' && in_array(strtolower($extension),$allowedExts)) {
+					(isset($itemCount[$directory])) ? $itemCount[$directory]++ : $itemCount[$directory] = 1;
+					$this->listAddItem($file,$strItemType,$directory,$file);	
+				}
+			}
 			unset($this->fileObject);
 
+			// ...and finally add the directories
 			foreach($dirContents['directories'] as $key=>$val) {
 				$arrTmp = explode('/',$val);
 				if (substr($arrTmp[count($arrTmp)-1],0,1)!='.') {
-					$this->listAdd($arrTmp[count($arrTmp)-1],$strType,$val,0);	
+					$this->listAdd($arrTmp[count($arrTmp)-1],$strType,$val,(isset($itemCount[$val]) ? $itemCount[$val] : 0));	
 				}
 			}
-			
-			$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic");
-			if (!$finfo) {
-    echo "Opening fileinfo database failed";
-    exit();
-}
-			foreach($dirContents['files'] as $key=>$val) {
-				$mimetype 	= $finfo->file($val);
-				$directory	= dirname($val);
-				$file		= basename($val);
-				
-				echo $directory.' -> '.$file.' -> '.$mimetype.'<br/>';	
-			}
-			$finfo->close();
-
 		}
 	}
 	
