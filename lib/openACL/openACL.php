@@ -25,9 +25,9 @@
 * openACL
 *
 * Part of the openWebX-API
-* This class is testing
+* This class is TODO
 * @author Jens Reinemuth <jens@openos.de>
-* @version $Id: openACL.php 217 2009-08-14 13:56:19Z jens $
+* @version
 * @package openWebX
 * @subpackage openACL
 * @uses openWebX
@@ -46,14 +46,6 @@ class openACL extends openWebX implements openObject {
 
     public function __destruct() {
 
-    }
-
-    public function set($strProperty,$mixedValue) {
-      $this->$strProperty = $mixedValue;
-    }
-
-    public function get($strProperty) {
-      return $this->$strProperty;
     }
 
     public function handleSignal($strSignalName,$mixedParams) {

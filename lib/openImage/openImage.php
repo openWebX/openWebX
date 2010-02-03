@@ -5,13 +5,13 @@ class openImage extends openWebX implements openObject {
 	private $imgObject 	= NULL;
 	private $imgFile	= NULL;
 	private $imgHash	= NULL;
-	private $imgParams	= NULL;
-	private $docObject 	= NULL;
-	
-	
+	private $imgParams	= NULL;	
 
-	public function __construct($strQueue = NULL) {
+	public function __construct($strQueue = NULL,$absPath = NULL) {
 		$this->registerSlots();
+		if ($absPath) {
+			$this->imgFile = $absPath;	
+		}
 		if ($strQueue) {
 			$arrQueue = explode('/',$strQueue);
 			$this->imgProcess($arrQueue);	
@@ -61,56 +61,42 @@ class openImage extends openWebX implements openObject {
 	}
 	
 	private function imgProcess($arrParams) {
-		$fileName			= openFilter::filterAction('clean','string',$arrParams[0]);
-		$this->imgHash 		= md5($fileName);
-		$this->imgParams	= md5(serialize($arrParams));
-		$this->docObject 	= new openDocument($this->imgHash,'image');
-		if ($this->docObject && $this->docObject->hasAttachment($this->imgParams)) {
-			$imgURI = $this->docObject->getAttachmentURL($this->imgParams);
-			if (!in_array('show',$arrParams)) {
-				return $imgURI;	
-			} else {
-				$myImg 		= new openHTML_Tag('img',true);
-				$myImg->id 	= 'img_'.$this->imgParams;
-				$myImg->src	= $imgURI;
-				$retVal 	= $myImg->build();
-				unset ($myImg);
-				echo $retVal;
-			}
+		if (!isset($this->imgFile)) {
+			$fileName			= openFilter::filterAction('clean','string',$arrParams[0]);
+			$this->imgHash 		= md5($fileName);
+			$this->imgParams	= md5(serialize($arrParams));
+			$this->initObject($this->imgFile);
+			unset ($arrParams[0]);
 		} else {
-			if ($this->imgFindFile($fileName)) {
-				$this->initObject($this->imgFile);
-				unset ($arrParams[0]);
-				foreach ($arrParams as $key=>$val) {
-	           		switch ($val) {
-	                    case 'blur':
-	                        $this->imgObject->imgBlur(5,3);
-	                        break;
-	                    case 'greyscale':
-	                    case 'grayscale':
-	                        $this->imgObject->imgGreyscale();
-	                        break;
-					    case 'resize':
-						   	$size = explode('x',$arrParams[$key+1]);
-						   	$this->imgObject->imgResize($size[0],$size[1]);
-	                       	break;
-	                    case 'sepia':
-	                    	$this->imgObject->imgSepia(80);
-	                    	break;
-					    case 'scale':
-						   	$size = explode('x',$arrParams[$key+1]);
-						   	$this->imgObject->imgScale($size[0],$size[1]);
-	                       	break;
-	                    case 'show':
-	                        $this->imgShow();
-	                        break;
-	                    case 'save':
-	                    	$this->imgSave();
-	                    	break;
-					}
-				}
-			} else {
-				echo 'Image not found!';	
+			$this->imgHash		= md5($this->imgFile);
+			$this->initObject($this->imgFile);
+		}
+		foreach ($arrParams as $key=>$val) {
+			switch ($val) {
+     			case 'blur':
+     				$this->imgObject->imgBlur(5,3);
+     				break;
+ 				case 'greyscale':
+ 				case 'grayscale':
+     				$this->imgObject->imgGreyscale();
+     				break;
+ 				case 'resize':
+					$size = explode('x',$arrParams[$key+1]);
+   					$this->imgObject->imgResize($size[0],$size[1]);
+   					break;
+				case 'sepia':
+					$this->imgObject->imgSepia(80);
+					break;
+				case 'scale':
+   					$size = explode('x',$arrParams[$key+1]);
+   					$this->imgObject->imgScale($size[0],$size[1]);
+   					break;
+				case 'show':
+    				$this->imgShow();
+    				break;
+				case 'save':
+            		$this->imgSave();
+            		break;
 			}
 		}
 	}
@@ -119,14 +105,13 @@ class openImage extends openWebX implements openObject {
 		$this->imgSave();
 		$myImg 		= new openHTML_Tag('img',true);
 		$myImg->id 	= 'img_'.$this->imgParams;
-		$myImg->src	= $this->docObject->getAttachmentURL($this->imgParams);
+		$myImg->src = Settings::get('web_cache').$this->imgHash.'.png';
 		echo $myImg->build();
 		unset ($myImg);
 	}
 	
 	private function imgSave() {
-		$this->docObject->addAttachment($this->imgParams,$this->imgObject->imgGet(),'image/png');
-		$this->docObject->save();
+		file_put_contents(Settings::get('path_webcache').$this->imgHash.'.png',$this->imgObject->imgGet());
 	}
 
 }
@@ -141,7 +126,7 @@ interface openImage_Interface {
 	public function imgResize		($iWidth, $iHeight);
 	public function imgScale		($iWidth,$iHeight);	
 	public function imgSepia		($iThreshold);
-	public function imgText2Image	();
+
 
 }
 ?>

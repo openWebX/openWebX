@@ -64,11 +64,20 @@ class openList extends openWebX implements openObject {
 		unset($this->dbObject);
 	}
 	
+	public function listGetListItemsByListType($strListType) {
+		$this->dbObject = new openDB();
+		$this->dbObject->dbSetStatement(SQL_openList_getListItems_ByListType,array('type'=>$strListType));
+		$this->dbObject->dbFetchArray();
+		$this->listItemArray = $this->dbObject->dbResultArray;
+		unset($this->dbObject);
+		
+	}
+	
 	
 	private function listAdd($strTitle,$strType,$strFolder,$strElements = 0) {
 		$this->listArray[] = array(
 			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
-			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strFolder)),
 			'type' 		=> openFilter::filterAction('clean','string',$strType),
 			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
 			'elements' 	=> intval($strElements),
@@ -84,7 +93,7 @@ class openList extends openWebX implements openObject {
 	private function listAddItem($strTitle,$strType,$strFolder,$strFile) {
 		$this->listItemArray[] = array(
 			'title' 	=> openFilter::filterAction('clean','string',$strTitle),
-			'hash' 		=> md5(openFilter::filterAction('clean','string',$strTitle)),
+			'hash' 		=> md5(openFilter::filterAction('clean','string',$strFolder).'/'.openFilter::filterAction('clean','string',$strFile)),
 			'type' 		=> openFilter::filterAction('clean','string',$strType),
 			'folder' 	=> openFilter::filterAction('clean','string',$strFolder),
 			'file' 		=> openFilter::filterAction('clean','string',$strFile),

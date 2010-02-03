@@ -27,7 +27,6 @@ class openHTML_Body extends openWebX implements openObject {
 	protected $elements = array();
 
 	public function __construct() {
-		echo 'init body';
 	}
 
 	public function __destruct() {

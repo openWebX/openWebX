@@ -5,13 +5,17 @@ error_reporting(E_ALL);
 require_once('openWebX.php');
 require_once('request.php');
 
+$myHTML = new openHTML();
+
+
 $myGal = new openGallery();
 
-$myGal->galleryGetAll();
 
-openDebug::dbgVar($myGal->galleryArray);
 
-unset($myGal);
+$myGals = $myHTML->body->add('div','galleries');
 
-echo '<br/>Laufzeit: '.(time()-$timer).' secs';
+$myGals->content = $myGal->galleryBuildPiles();
+
+
+unset($myGal,$myHTML);
 ?>

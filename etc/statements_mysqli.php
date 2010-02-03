@@ -182,6 +182,25 @@ define ('SQL_openList_getList_ByFolder','
 		`open_Object_List`.`folder` LIKE ":folder%"
 ');
 
+define ('SQL_openList_getListItems_ByListType','
+	SELECT
+		`open_Object_List_Item`.`id`,
+		`open_Object_List`.`id`	AS `list_id`,
+		`open_Object_List`.`title` AS `list_title`,
+		`open_Object_List_Item`.`title`,
+		`open_Object_List_Item`.`hash`,
+		`open_Object_List_Item`.`type`,
+		`open_Object_List_Item`.`folder`
+	FROM
+		`open_Object_List_Item`
+	JOIN
+		`open_Object_List`
+	ON
+		`open_Object_List`.`folder` = `open_Object_List_Item`.`folder`
+	WHERE
+		`open_Object_List`.`type` = :type
+');
+
 /**
  * open_Microblog
  */

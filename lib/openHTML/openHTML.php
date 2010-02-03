@@ -38,17 +38,17 @@ class openHTML extends openWebX implements openObject {
 
   	protected $data 	= array();
   	
-  	private $head = null;
-  	private $body = null;
-  	private $foot = null;
+  	public $head = null;
+  	public $body = null;
+  	public $foot = null;
   	
   	private $isGetted 	= false;
   	private $isShown 	= false;
 
   	public function __construct() {
-    	//$this->head = new openHTML_Head();
-    	//$this->body = new openHTML_Body();
-    	//$this->foot = new openHTML_Foot();
+    	$this->head = new openHTML_Head();
+    	$this->body = new openHTML_Body();
+    	$this->foot = new openHTML_Foot();
   	}
   	public function __destruct() {
     	if (!$this->isGetted && !$this->isShown) $this->show();
@@ -88,7 +88,7 @@ class openHTML extends openWebX implements openObject {
 
   	public function show() {
     	$this->isShown = true;
-    	//echo $this->build();
+    	echo $this->build();
   	}
 }
 ?>

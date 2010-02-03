@@ -25,7 +25,7 @@
 * openAdmin
 *
 * Part of the openWebX-API
-* This class is stable
+* This class is TODO
 * @author Jens Reinemuth <jens@openos.de>
 * @version $Id$
 * @package openWebX
@@ -52,7 +52,7 @@ class openAdmin extends openWebX implements openObject {
 	
 	private function adminMainpage() {
 		
-		echo 'im Admin-Bereich!';
+		// TODO: build up admin-pages
 	
 	}
 			

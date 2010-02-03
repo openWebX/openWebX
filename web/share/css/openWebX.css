@@ -35,6 +35,40 @@
 		-moz-border-radius-topleft: 0px;
 		-moz-border-radius-topright: 0px;
 	}
+	.gallery_container {
+    	position: relative;
+    	float:left;
+    	height: 390px;
+    	width: 270px;
+    	border:1px solid red;
+    	text-align:center;
+    	
+	}
+	
+	.gallery_container_title {
+		color:#fff;
+    	font-size:18px;
+    	font-weight:bold;
+    	position:absolute;
+    	float:center;
+    	bottom:40px;
+    	boerder:1px solid green;
+    	width:100%;
+    	text-align:center;
+    	clear:both;
+	}
+
+	.gallery_image {
+    	position: relative;
+    	float: left;
+    	padding: 0;
+    	margin: 5px;
+    	-webkit-box-shadow: 0 0 5px #000;
+    	-moz-box-shadow: 0 0 5px #000;
+    	border: solid 2px #fff;
+    	border-bottom: solid 16px #fff;
+    	-webkit-transition: -webkit-transform 0.20s ease-in-out;
+	}
 }
 
 @media print {

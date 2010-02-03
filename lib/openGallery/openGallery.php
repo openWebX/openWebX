@@ -54,11 +54,56 @@ class openGallery extends openWebX implements openObject {
 		unset($this->listObject);
 	}
 	
+	public function galleryGetItems($strGallery='') {
+		$this->listObject = new openList();	
+		$this->listObject->listGetListItemsByListType('gallery');
+		$this->galleryItemArray = $this->listObject->listItemArray;
+		unset($this->listObject);
+	}
+	
+	public function galleryBuildPiles($pileSize=9) {
+		$this->galleryGetItems();
+		$actContainer = '';
+		$retVal = '';
+		$iCounter = 1;
+		foreach ($this->galleryItemArray as $val) {
+			if ($actContainer!=$val['list_title']) {
+				if ($actContainer!='') {
+					$retVal .='<div class="gallery_container_title">'.$val['list_title'].'</div>';
+					$retVal .='</div>';
+					$iCounter = 1;	
+				}
+				$retVal .= '<div id="gallery_'.$val['list_id'].'" class="gallery_container">';
+				$actContainer = $val['list_title'];	
+			}
+			if ($iCounter<=$pileSize) {
+				$retVal .= '<img class="gallery_image" src="'.Settings::get('web_cache').$val['hash'].'.png" />';
+				$iCounter++;
+			}	
+		}
+		return $retVal;
+	}
+	
 	public function galleryBuildFromDirectory($strDirectory) {
+		$arrImages = array();
 		$this->listObject = new openList();
 		$this->listObject->listBuildFromDirectory($strDirectory,'gallery','images');
+		foreach ($this->listObject->listItemArray as $val) {
+			$arrImages[] = $val['folder'].'/'.$val['file'];
+		}
 		unset($this->listObject);
+		$this->galleryBuildThumbnails($arrImages);
 	}	
+	
+	private function galleryBuildThumbnails($arrImages) {
+		foreach ($arrImages as $val) {
+			$myFile = Settings::get('path_webcache').md5($val).'.png';
+			if (!file_exists($myFile)) {
+				$myImg = new openImage('resize/75x75/save',$val);
+				unset($myImg);
+			} 
+		}	
+	}
 	
 	private function registerSlots() {
 		openWebX::registerSlot($this,'gallery',0);	

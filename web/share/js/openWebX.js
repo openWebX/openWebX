@@ -2,6 +2,52 @@
 $Id: openWebX.js 236 2009-09-10 06:03:14Z jens $
 */
 
+
+var pos, collapsed;
+
+/*
+$(document.body).addEvents({
+   
+    click: function(e){
+        
+        if (collapsed){
+            
+            images.each(function(img, i){
+                (function(){
+                    this.style.WebkitTransform = 'rotate(0)'
+                    this.style.MozTransform = 'rotate(0)';
+                    this.morph({
+                        top: this.retrieve('default:coords').y,
+                        left: this.retrieve('default:coords').x
+                    });
+                }).delay(40 * i, img);
+            });
+            
+            collapsed = false;
+        } else {
+            var picked = $(e.target).retrieve('default:coords');
+            
+            images.each(function(img, i){
+                (function(){
+                    //this.setStyle('-webkit-transform', 'rotate(' + $random(-20, 20) + 'deg)');
+                    this.style.WebkitTransform = 'rotate('+$random(-20,20)+'deg)'
+                    this.style.MozTransform = 'rotate('+$random(-20,20)+'deg)';
+                    this.morph({
+                        top: picked.y + $random(-20, 20),
+                        left: picked.x + $random(-20, 20)
+                    });
+                }).delay(40 * i, img);
+            });
+            
+            collapsed = true;
+        }
+    }
+});
+*/
+
+
+
+
 var divArray = new Array();
 
 window.addEvent('domready',function(){
@@ -27,6 +73,9 @@ window.addEvent('domready',function(){
 	
 	// Prepare Tabs
 	myObj.tabInit();
+	
+	// Prepare Galleries
+	myObj.initGalleries();
 
 });
 
@@ -171,6 +220,53 @@ openWebX.implement({
 					myImg.addClass('passive');
 				}
 			});
+		});
+	},
+	
+	initGalleries: function() {
+		$$('div[id^=gallery_]').each(function(item){
+			posDiv = item.getPosition();
+			
+			centerX = posDiv.x + 185;
+			centerY = posDiv.y + 195;
+			
+			//alert(item.getProperty('id')+' '+centerX+'/'+centerY);
+			
+			var images = item.getElements('img');
+			images.each(function(img){
+				
+				if (img.getProperty('class')=='gallery_image') {
+					
+				    pos = img.getPosition();
+				
+				    img
+				        .store('default:coords', pos)
+				        .set('styles', {
+				            top: pos.y,
+				            left: pos.x
+				        })
+				        .set('morph', {
+				            transition: 'back:out'
+				        });
+				    
+				    // MooTools bug (?)
+				    (function(){
+				        this.setStyle('position', 'absolute');
+				    }).delay(1, img);
+				    
+				    img.style.WebkitTransform = 'rotate('+$random(-20,20)+'deg)'
+		            img.style.MozTransform = 'rotate('+$random(-20,20)+'deg)';
+		            img.set('styles', {
+		                top: centerY + $random(-20, 20),
+		                left: centerX + $random(-20, 20)
+		             });
+				}
+				
+				
+                
+			     
+			});
+			
 		});
 	}
 });
