@@ -91,7 +91,7 @@ openRequest::parse();
  */
 // Fill the object-cache
 //if (is_null(openSystem::sysGetValue('object_cache'))) {
-//    openSystem::sysObjectCache();
+    //openSystem::sysObjectCache();
 //}
 
 

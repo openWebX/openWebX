@@ -151,8 +151,7 @@ class openList extends openWebX implements openObject {
 	}
 	
 	private function registerSlots() {
-		openWebX::registerSlot($this,'list',0);
-		openWebX::registerSlot($this,'folder',0);	
+		openWebX::registerSlot($this,'list',0);	
 	}
 	
 }

@@ -40,7 +40,6 @@
     	float:left;
     	height: 390px;
     	width: 270px;
-    	border:1px solid red;
     	text-align:center;
     	
 	}
@@ -52,7 +51,6 @@
     	position:absolute;
     	float:center;
     	bottom:40px;
-    	boerder:1px solid green;
     	width:100%;
     	text-align:center;
     	clear:both;

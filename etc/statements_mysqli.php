@@ -22,6 +22,36 @@
 // # Revision: $Revision: 234 $
 // ########################################################################
 
+
+/**
+ * SQLs for installation
+ */
+
+define ('SQL_Trigger_openObject','
+
+	DROP TRIGGER IF EXISTS `insertObject`;
+
+	CREATE TRIGGER `insertObject` 
+
+
+
+');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * SQLs for openDB
  */
@@ -199,6 +229,8 @@ define ('SQL_openList_getListItems_ByListType','
 		`open_Object_List`.`folder` = `open_Object_List_Item`.`folder`
 	WHERE
 		`open_Object_List`.`type` = :type
+	AND 
+		`open_Object_List`.`public` = 1
 ');
 
 /**

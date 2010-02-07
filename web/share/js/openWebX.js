@@ -52,6 +52,7 @@ var divArray = new Array();
 
 window.addEvent('domready',function(){
 	Clientcide.setAssetLocation('/share/images/icons/Assets');
+	
 	var myObj = new openWebX();
 	
 	myObj.getDivs();
@@ -114,10 +115,8 @@ openWebX.implement({
 				var myID = item.getProperty('id');
 				var itemWaiter = new Waiter($(myID));
 				itemWaiter.start();
-				item.load('request.php?request='+myLoad).chain(function() {
-					alert ('done!');
-				});
-				//itemWaiter.stop();
+				item.load('/request.php?request='+myLoad);
+				itemWaiter.stop();
 			}
 		});
 	},
@@ -158,7 +157,6 @@ openWebX.implement({
 				faderTop.inject(item.id);
 				faderBottom.inject(item.id);
 			}
-			console.log(item);
 		});
 	},
 	
@@ -224,18 +222,18 @@ openWebX.implement({
 	},
 	
 	initGalleries: function() {
-		$$('div[id^=gallery_]').each(function(item){
-			posDiv = item.getPosition();
+		$$('div[class=gallery_container]').each(function(item){
+			posDiv = item.getCoordinates('relative');
 			
-			centerX = posDiv.x + 185;
-			centerY = posDiv.y + 195;
+			centerY = (posDiv.width/2)-40;
+			centerX = (posDiv.height/2)-50;
 			
-			//alert(item.getProperty('id')+' '+centerX+'/'+centerY);
+			count = 0;
 			
 			var images = item.getElements('img');
 			images.each(function(img){
 				
-				if (img.getProperty('class')=='gallery_image') {
+				if (img.hasClass('gallery_image')) {
 					
 				    pos = img.getPosition();
 				
@@ -254,12 +252,16 @@ openWebX.implement({
 				        this.setStyle('position', 'absolute');
 				    }).delay(1, img);
 				    
+					
 				    img.style.WebkitTransform = 'rotate('+$random(-20,20)+'deg)'
 		            img.style.MozTransform = 'rotate('+$random(-20,20)+'deg)';
 		            img.set('styles', {
-		                top: centerY + $random(-20, 20),
-		                left: centerX + $random(-20, 20)
+		            	position: 'absolute',
+		                top: centerX + $random(-20, 20),
+		                left: centerY + $random(-20, 20),
+		                zindex: (100 + count)
 		             });
+		            count++;
 				}
 				
 				

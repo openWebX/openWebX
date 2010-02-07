@@ -17,7 +17,6 @@ if (isset($_GET['request'])) {
 			$arrHandlers[$actHandler]['params'][] = $val;
 		}
 	}
-	openDebug::dbgVar($arrHandlers);
 	foreach ($arrHandlers as $key=>$val) {
 		if (!isset($val['params'])) $val['params'] = null;
 		$myObj = new $key();

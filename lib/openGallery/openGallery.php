@@ -63,23 +63,34 @@ class openGallery extends openWebX implements openObject {
 	
 	public function galleryBuildPiles($pileSize=9) {
 		$this->galleryGetItems();
+		//openDebug::dbgVar($this->galleryItemArray);
 		$actContainer = '';
+		$actID = '';
 		$retVal = '';
 		$iCounter = 1;
 		foreach ($this->galleryItemArray as $val) {
 			if ($actContainer!=$val['list_title']) {
 				if ($actContainer!='') {
-					$retVal .='<div class="gallery_container_title">'.$val['list_title'].'</div>';
-					$retVal .='</div>';
-					$iCounter = 1;	
+					$retVal .='
+					<div id="gallery_'.$actID.'_title" class="gallery_container_title">'.$actContainer.'</div>
+					</div>
+					';
 				}
-				$retVal .= '<div id="gallery_'.$val['list_id'].'" class="gallery_container">';
-				$actContainer = $val['list_title'];	
+				$iCounter = 1;
+				$actContainer = $val['list_title'];
+				$actID = $val['list_id'];	
+				$retVal .= '
+				<div id="gallery_'.$actID.'" class="gallery_container">
+				';
 			}
 			if ($iCounter<=$pileSize) {
-				$retVal .= '<img class="gallery_image" src="'.Settings::get('web_cache').$val['hash'].'.png" />';
+				$retVal .= '
+				<img id="gallery_'.$actID.'_image_'.$val['hash'].'" class="gallery_image" src="'.Settings::get('web_cache').$val['hash'].'.png" />
+				';
 				$iCounter++;
-			}	
+			}
+				
+				
 		}
 		return $retVal;
 	}
